@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PLPSOFT.ERP.SaaS.Modules.CRM.Application\PLPSOFT.ERP.SaaS.Modules.CRM.Application.csproj" />
+    <ProjectReference Include="..\PLPSOFT.ERP.SaaS.Modules.CRM.Domain\PLPSOFT.ERP.SaaS.Modules.CRM.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Persistence\" />
+  </ItemGroup>
+
+</Project>

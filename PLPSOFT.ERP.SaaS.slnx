@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="PLPSOFT.ERP.SaaS.Modules.CRM.Application/PLPSOFT.ERP.SaaS.Modules.CRM.Application.csproj" />
+  <Project Path="PLPSOFT.ERP.SaaS.Modules.CRM.Domain/PLPSOFT.ERP.SaaS.Modules.CRM.Domain.csproj" />
+  <Project Path="PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure/PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.csproj" />
+  <Project Path="PLPSOFT.ERP.SaaS/PLPSOFT.ERP.SaaS.csproj" />
+</Solution>
