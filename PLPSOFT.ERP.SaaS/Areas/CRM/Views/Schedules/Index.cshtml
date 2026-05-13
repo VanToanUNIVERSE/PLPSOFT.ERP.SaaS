@@ -1,0 +1,103 @@
+﻿    @model IEnumerable<dynamic>
+
+@{
+    ViewData["Title"] = "Danh sách Lịch chăm sóc";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Quản lý Lịch làm việc & Nhắc hẹn</h1>
+        <a href="@Url.Action("Create", "Schedules")" class="btn btn-success shadow-sm">
+            <i class="fas fa-calendar-plus fa-sm text-white-50"></i> Tạo lịch hẹn mới
+        </a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Trạng thái</label>
+                    <select class="form-select border-left-info">
+                        <option value="">-- Tất cả trạng thái --</option>
+                        <option value="PLANNED">Đã lên lịch (PLANNED)</option>
+                        <option value="COMPLETED">Hoàn thành (COMPLETED)</option>
+                        <option value="CANCELED">Đã hủy (CANCELED)</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Loại lịch</label>
+                    <select class="form-select">
+                        <option value="">-- Tất cả loại --</option>
+                        <option value="CALL">Gọi điện (CALL)</option>
+                        <option value="MEETING">Gặp mặt (MEETING)</option>
+                        <option value="REORDER">Nhắc mua lại (REORDER)</option>
+                        <option value="SERVICE">Chăm sóc/Bảo trì (SERVICE)</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold">Thời gian</label>
+                    <div class="input-group">
+                        <input type="date" class="form-control" title="Từ ngày">
+                        <span class="input-group-text">đến</span>
+                        <input type="date" class="form-control" title="Đến ngày">
+                    </div>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-secondary w-100">Lọc lịch</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 bg-white">
+            <h6 class="m-0 font-weight-bold text-success">Lịch làm việc chi tiết</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Thời gian bắt đầu</th>
+                            <th>Tiêu đề công việc</th>
+                            <th>Khách hàng</th>
+                            <th>Loại lịch</th>
+                            <th>Người phụ trách</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @* Dữ liệu mẫu dựa trên seed data: Gọi điện chăm sóc khách hàng KH001 *@
+                        <tr>
+                            <td>11/05/2026 18:18</td>
+                            <td><strong>Gọi điện chăm sóc khách hàng KH001</strong></td>
+                            <td>Nguyễn Văn A</td>
+                            <td><span class="badge bg-info">Gọi điện</span></td>
+                            <td>crm01</td>
+                            <td><span class="badge bg-primary">Đã lên lịch</span></td>
+                            <td class="text-center">
+                                <a href="@Url.Action("Details", "Schedules", new { id = 1 })" class="btn btn-sm btn-outline-info" title="Xem">👁️</a>
+                                <a href="@Url.Action("Edit", "Schedules", new { id = 1 })" class="btn btn-sm btn-outline-warning" title="Sửa">✏️</a>
+                                <button class="btn btn-sm btn-outline-success" title="Hoàn thành">✅</button>
+                            </td>
+                        </tr>
+                        @* Thêm dữ liệu mẫu lịch quá hạn để demo chức năng Dashboard [cite: 72] *@
+                        <tr class="table-danger">
+                            <td>09/05/2026 09:00</td>
+                            <td><strong>Gặp mặt ký hợp đồng</strong></td>
+                            <td>Trần Thị B</td>
+                            <td><span class="badge bg-secondary">Gặp mặt</span></td>
+                            <td>admin</td>
+                            <td><span class="badge bg-danger">Quá hạn</span></td>
+                            <td class="text-center">
+                                <a href="#" class="btn btn-sm btn-outline-info">👁️</a>
+                                <a href="#" class="btn btn-sm btn-outline-warning">✏️</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

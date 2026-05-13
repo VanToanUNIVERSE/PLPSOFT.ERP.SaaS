@@ -1,0 +1,91 @@
+﻿@model dynamic
+
+@{
+    ViewData["Title"] = "Chi tiết Lịch chăm sóc";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Chi tiết Lịch làm việc & Nhắc hẹn</h1>
+        <div>
+            <a href="@Url.Action("Edit", "Schedules", new { id = 1 })" class="btn btn-warning shadow-sm">
+                <i class="fas fa-edit fa-sm text-white-50"></i> Chỉnh sửa
+            </a>
+            <a href="@Url.Action("Index", "Schedules")" class="btn btn-secondary shadow-sm"> Quay lại</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-white">
+                    <h6 class="m-0 font-weight-bold text-success">Thông tin công việc</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <label class="text-muted small text-uppercase">Tiêu đề công việc</label>
+                        <h4 class="font-weight-bold text-dark">Gọi điện chăm sóc khách hàng KH001</h4>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="text-muted small text-uppercase">Thời gian bắt đầu</label>
+                            <p class="text-dark fw-bold mb-0">11/05/2026 18:18</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small text-uppercase">Thời gian kết thúc</label>
+                            <p class="text-dark fw-bold mb-0">11/05/2026 18:48</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-0">
+                        <label class="text-muted small text-uppercase">Mô tả chi tiết</label>
+                        <div class="p-3 bg-light rounded border">
+                            <p class="text-dark mb-0">Gọi điện hỏi thăm sau khi khách mua hàng.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-white">
+                    <h6 class="m-0 font-weight-bold text-success">Phân loại hệ thống</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Trạng thái</span>
+                            <span class="badge bg-primary">Đã lên lịch (PLANNED)</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Loại lịch</span>
+                            <span class="badge bg-info text-dark">Gọi điện (CALL)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-white">
+                    <h6 class="m-0 font-weight-bold text-success">Thông tin liên quan</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="text-muted small text-uppercase d-block">Khách hàng</label>
+                        <a href="#" class="font-weight-bold text-primary">Nguyễn Văn A (KH001)</a>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small text-uppercase d-block">Người phụ trách</label>
+                        <span class="text-dark font-weight-bold">crm01 - Nhân viên CSKH</span>
+                    </div>
+                    <div class="mb-0">
+                        <label class="text-muted small text-uppercase d-block">Người tạo lịch</label>
+                        <span class="text-muted">admin - Quản trị viên</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

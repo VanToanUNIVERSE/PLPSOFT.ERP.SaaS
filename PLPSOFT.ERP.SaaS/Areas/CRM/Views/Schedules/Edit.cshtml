@@ -1,0 +1,82 @@
+﻿@model dynamic
+
+@{
+    ViewData["Title"] = "Cập nhật Lịch chăm sóc";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Cập nhật Lịch làm việc & Nhắc hẹn</h1>
+        <a href="@Url.Action("Index", "Schedules")" class="btn btn-secondary btn-sm shadow-sm">Quay lại danh sách</a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 bg-white">
+            <h6 class="m-0 font-weight-bold text-success">Chi tiết lịch hẹn và cập nhật trạng thái</h6>
+        </div>
+        <div class="card-body">
+            <form asp-controller="Schedules" asp-action="Edit" method="post">
+                <input type="hidden" name="ScheduleID" value="1" />
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Khách hàng</label>
+                        <input type="text" class="form-control bg-light" value="Nguyễn Văn A" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Trạng thái lịch hẹn <span class="text-danger">*</span></label>
+                        <select class="form-select border-primary" name="StatusID" required>
+                            <option value="PLANNED" selected>Đã lên lịch (PLANNED)</option>
+                            <option value="COMPLETED">Hoàn thành (COMPLETED)</option>
+                            <option value="CANCELED">Đã hủy (CANCELED)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Loại lịch <span class="text-danger">*</span></label>
+                        <select class="form-select" name="ScheduleTypeID" required>
+                            <option value="CALL" selected>Gọi điện (CALL)</option>
+                            <option value="MEETING">Gặp mặt (MEETING)</option>
+                            <option value="REORDER">Nhắc mua lại (REORDER)</option>
+                            <option value="SERVICE">Chăm sóc/Bảo trì (SERVICE)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Người phụ trách <span class="text-danger">*</span></label>
+                        <select class="form-select" name="AssignedToUserID" required>
+                            <option value="2" selected>crm01 - Nhân viên CSKH</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Tiêu đề công việc <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="Title" value="Gọi điện chăm sóc khách hàng KH001" required>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Thời gian bắt đầu <span class="text-danger">*</span></label>
+                        <input type="datetime-local" class="form-control" name="StartTime" value="2026-05-11T18:18" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Thời gian kết thúc <span class="text-danger">*</span></label>
+                        <input type="datetime-local" class="form-control" name="EndTime" value="2026-05-11T18:48" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Mô tả chi tiết</label>
+                    <textarea class="form-control" name="Description" rows="4">Gọi điện hỏi thăm sau khi khách mua hàng.</textarea>
+                </div>
+
+                <hr>
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-success px-4">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,92 @@
+﻿@model dynamic 
+@* Sau này sẽ thay bằng FeedbackViewModel chứa dữ liệu cũ để đổ vào form *@
+
+@{
+    ViewData["Title"] = "Cập nhật Phản hồi";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Cập nhật Phản hồi / Khiếu nại</h1>
+        <a href="@Url.Action("Index", "Feedbacks")" class="btn btn-secondary btn-sm shadow-sm"> Quay lại danh sách</a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 bg-white">
+            <h6 class="m-0 font-weight-bold text-primary">Thông tin chi tiết và Xử lý</h6>
+        </div>
+        <div class="card-body">
+            <form asp-controller="Feedbacks" asp-action="Edit" method="post">
+                @* FeedbackID ẩn để gửi về Server *@
+                <input type="hidden" name="FeedbackID" value="1" />
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label font-weight-bold">Khách hàng</label>
+                        <input type="text" class="form-control bg-light" value="Nguyễn Văn A" readonly>
+                        <small class="text-muted">Không được phép đổi khách hàng sau khi tạo.</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label font-weight-bold">Trạng thái xử lý <span class="text-danger">*</span></label>
+                        <select class="form-select border-primary" name="StatusID" required>
+                            @* Các trạng thái theo chốt của nhóm *@
+                            <option value="NEW">Mới (NEW)</option>
+                            <option value="PROCESSING" selected>Đang xử lý (PROCESSING)</option>
+                            <option value="RESOLVED">Đã giải quyết (RESOLVED)</option>
+                            <option value="CLOSED">Đã đóng (CLOSED)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label font-weight-bold">Mức độ ưu tiên <span class="text-danger">*</span></label>
+                        <select class="form-select" name="PriorityID" required>
+                            <option value="LOW">Thấp</option>
+                            <option value="MEDIUM">Trung bình</option>
+                            <option value="HIGH" selected>Cao</option>
+                            <option value="URGENT">Khẩn cấp</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label font-weight-bold">Gán nhân viên xử lý</label>
+                        <select class="form-select" name="AssignedToUserID">
+                            <option value="">-- Chọn nhân viên --</option>
+                            <option value="2" selected>Nhân viên chăm sóc khách hàng (crm01)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label font-weight-bold">Tiêu đề</label>
+                    <input type="text" class="form-control" name="Title" value="Khách phản hồi sản phẩm lỗi" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label font-weight-bold">Nội dung phản hồi</label>
+                    <textarea class="form-control" name="Content" rows="4" required>Khách báo sản phẩm nhận được bị lỗi cần kiểm tra và xử lý.</textarea>
+                </div>
+
+                <div class="card bg-light mb-3">
+                    <div class="card-body">
+                        <h6 class="font-weight-bold text-success border-bottom pb-2 mb-3">Kết quả giải quyết</h6>
+                        <div class="mb-3">
+                            <label class="form-label">Hướng xử lý / Kết quả (Resolution)</label>
+                            <textarea class="form-control" name="Resolution" rows="3" placeholder="Nhập chi tiết cách đã xử lý vấn đề..."></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="form-label">Điểm đánh giá (Rating: 1-5)</label>
+                                <input type="number" class="form-control" name="Rating" min="1" max="5" value="5">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-4">
+                    <button type="submit" class="btn btn-primary px-4">Cập nhật thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

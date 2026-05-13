@@ -11,8 +11,4 @@
     <ProjectReference Include="..\PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure\PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Areas\CRM\Views\" />
-  </ItemGroup>
-
 </Project>

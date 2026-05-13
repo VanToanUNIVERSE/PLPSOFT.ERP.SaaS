@@ -7,43 +7,54 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/PLPSOFT.ERP.SaaS.styles.css" asp-append-version="true" />
-</head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PLPSOFT.ERP.SaaS</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+	<link rel="stylesheet" href="cloudflare.com" />
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - PLPSOFT.ERP.SaaS - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
-</body>
+</head>
+	<body class="bg-light">
+		<header>
+			<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
+				<div class="container-fluid">
+					<!--<a class="navbar-brand fw-bold" asp-area="CRM" asp-controller="Crm" asp-action="Dashboard">PLPSOFT CRM</a>-->
+					<a class="navbar-brand fw-bold" href="/">PLPSOFT CRM</a>
+					<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#crmNavbar" aria-controls="crmNavbar" aria-expanded="false" aria-label="Toggle navigation">
+						<span class="navbar-toggler-icon"></span>
+					</button>
+					<div class="collapse navbar-collapse" id="crmNavbar">
+						<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+							<li class="nav-item">
+								<a class="nav-link text-white" asp-area="CRM" asp-controller="Crm" asp-action="Dashboard">Dashboard</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link text-white" asp-area="CRM" asp-controller="Feedbacks" asp-action="Index">Phản hồi và Khiếu nại</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link text-white" asp-area="CRM" asp-controller="Schedules" asp-action="Index">Lịch chăm sóc</a>
+							</li>
+						</ul>
+						<div class="d-flex text-white">
+							<span class="me-3">Xin chào, Admin</span>
+						</div>
+					</div>
+				</div>
+			</nav>
+		</header>
+
+		<div class="container-fluid">
+			<main role="main" class="pb-3">
+				@RenderBody()
+			</main>
+		</div>
+
+		<footer class="border-top footer text-muted bg-white mt-auto py-3">
+			<div class="container-fluid text-center">
+				© 2026 - PLPSOFT ERP SaaS - Module 11 CRM
+			</div>
+		</footer>
+
+		<script src="~/lib/jquery/dist/jquery.min.js"></script>
+		<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="~/js/site.js" asp-append-version="true"></script>
+
+		@await RenderSectionAsync("Scripts", required: false)
+	</body>
 </html>

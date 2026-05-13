@@ -1,0 +1,81 @@
+﻿@model IEnumerable<dynamic> 
+@* Lưu ý: Sau này khi Toàn làm xong Backend, bạn sẽ thay 'dynamic' bằng ViewModel cụ thể *@
+
+@{
+    ViewData["Title"] = "Danh sách Phản hồi & Khiếu nại";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Quản lý Phản hồi & Khiếu nại</h1>
+        <a href="@Url.Action("Create", "Feedbacks")" class="btn btn-primary shadow-sm">
+            <i class="fas fa-plus fa-sm text-white-50"></i> Tạo phản hồi mới
+        </a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" class="form-control" placeholder="Tìm theo tiêu đề hoặc tên khách hàng...">
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select">
+                        <option value="">-- Tất cả trạng thái --</option>
+                        <option value="NEW">Mới</option>
+                        <option value="PROCESSING">Đang xử lý</option>
+                        <option value="RESOLVED">Đã giải quyết</option>
+                        <option value="CLOSED">Đã đóng</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select">
+                        <option value="">-- Mức độ ưu tiên --</option>
+                        <option value="LOW">Thấp</option>
+                        <option value="MEDIUM">Trung bình</option>
+                        <option value="HIGH">Cao</option>
+                        <option value="URGENT">Khẩn cấp</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-secondary w-100">Lọc dữ liệu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="feedbackTable" width="100%" cellspacing="0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Ngày tạo</th>
+                            <th>Tiêu đề</th>
+                            <th>Khách hàng</th>
+                            <th>Loại</th>
+                            <th>Ưu tiên</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @* Dữ liệu mẫu dựa trên seed data trong SQL script *@
+                        <tr>
+                            <td>10/05/2026</td>
+                            <td>Khách phản hồi sản phẩm lỗi</td>
+                            <td>Nguyễn Văn A</td>
+                            <td>Khiếu nại</td>
+                            <td><span class="badge bg-danger">Cao</span></td>
+                            <td><span class="badge bg-warning text-dark">Mới</span></td>
+                            <td class="text-center">
+                                <a href="@Url.Action("Details", "Feedbacks", new { id = 1 })" class="btn btn-sm btn-info text-white" title="Xem chi tiết">👁️</a>
+                                <a href="@Url.Action("Edit", "Feedbacks", new { id = 1 })" class="btn btn-sm btn-warning text-white" title="Sửa">✏️</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

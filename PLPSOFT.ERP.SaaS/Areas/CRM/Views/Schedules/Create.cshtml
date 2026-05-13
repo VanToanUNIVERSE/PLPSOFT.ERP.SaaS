@@ -1,0 +1,75 @@
+﻿@model dynamic
+
+@{
+    ViewData["Title"] = "Tạo Lịch chăm sóc mới";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Tạo Lịch làm việc & Nhắc hẹn</h1>
+        <a href="@Url.Action("Index", "Schedules")" class="btn btn-secondary btn-sm shadow-sm">Quay lại danh sách</a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 bg-white">
+            <h6 class="m-0 font-weight-bold text-success">Thông tin lịch hẹn</h6>
+        </div>
+        <div class="card-body">
+            <form asp-controller="Schedules" asp-action="Create" method="post">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Khách hàng <span class="text-danger">*</span></label>
+                        <select class="form-select" name="CustomerID" required>
+                            <option value="">-- Chọn khách hàng --</option>
+                            <option value="1">KH001 - Nguyễn Văn A</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Loại lịch <span class="text-danger">*</span></label>
+                        <select class="form-select border-success" name="ScheduleTypeID" required>
+                            <option value="">-- Chọn loại lịch --</option>
+                            <option value="CALL">Gọi điện (CALL)</option>
+                            <option value="MEETING">Gặp mặt (MEETING)</option>
+                            <option value="REORDER">Nhắc mua lại (REORDER)</option>
+                            <option value="SERVICE">Chăm sóc/Bảo trì (SERVICE)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Tiêu đề công việc <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="Title" placeholder="Ví dụ: Gọi điện hỏi thăm sau khi mua hàng..." required>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Thời gian bắt đầu <span class="text-danger">*</span></label>
+                        <input type="datetime-local" class="form-control" name="StartTime" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Thời gian kết thúc <span class="text-danger">*</span></label>
+                        <input type="datetime-local" class="form-control" name="EndTime" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Người phụ trách <span class="text-danger">*</span></label>
+                        <select class="form-select" name="AssignedToUserID" required>
+                            <option value="">-- Chọn nhân viên --</option>
+                            <option value="2" selected>crm01 - Nhân viên CSKH</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Mô tả chi tiết</label>
+                    <textarea class="form-control" name="Description" rows="4" placeholder="Nhập nội dung cần chuẩn bị hoặc lưu ý cho lịch hẹn này..."></textarea>
+                </div>
+
+                <hr>
+                <div class="d-flex justify-content-end">
+                    <a href="@Url.Action("Index", "Schedules")" class="btn btn-secondary me-2 px-4">Hủy</a>
+                    <button type="submit" class="btn btn-success px-4">Lưu lịch hẹn</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

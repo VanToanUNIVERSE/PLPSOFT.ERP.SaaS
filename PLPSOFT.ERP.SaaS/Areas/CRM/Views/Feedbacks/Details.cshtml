@@ -1,0 +1,95 @@
+﻿@model dynamic 
+@* Sau này sẽ thay bằng một ViewModel chứa đầy đủ thông tin chi tiết của Feedback *@
+
+@{
+    ViewData["Title"] = "Chi tiết Phản hồi";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Chi tiết Phản hồi / Khiếu nại</h1>
+        <div>
+            <a href="@Url.Action("Edit", "Feedbacks", new { id = 1 })" class="btn btn-warning shadow-sm">
+                <i class="fas fa-edit fa-sm text-white-50"></i> Chỉnh sửa
+            </a>
+            <a href="@Url.Action("Index", "Feedbacks")" class="btn btn-secondary shadow-sm"> Quay lại</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-white">
+                    <h6 class="m-0 font-weight-bold text-primary">Nội dung phản hồi</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <label class="text-muted small text-uppercase">Tiêu đề</label>
+                        <h4 class="font-weight-bold text-dark">Khách phản hồi sản phẩm lỗi</h4>
+                    </div>
+                    <div class="mb-4">
+                        <label class="text-muted small text-uppercase">Nội dung chi tiết</label>
+                        <p class="text-dark">Khách báo sản phẩm nhận được bị lỗi cần kiểm tra và xử lý. Cụ thể là phần đế giày bị bong keo sau 2 ngày sử dụng.</p>
+                    </div>
+                    <hr />
+                    <div class="mb-0">
+                        <label class="text-muted small text-uppercase">Kết quả giải quyết (Resolution)</label>
+                        <p class="text-success font-italic">Chưa có thông tin xử lý.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-white">
+                    <h6 class="m-0 font-weight-bold text-primary">Thông tin hệ thống</h6>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Trạng thái</span>
+                            <span class="badge bg-warning text-dark">Mới (NEW)</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Mức độ ưu tiên</span>
+                            <span class="badge bg-danger text-white">Cao (HIGH)</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Loại phản hồi</span>
+                            <span class="text-dark fw-bold">Khiếu nại</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Đánh giá (Rating)</span>
+                            <span class="text-warning">⭐⭐⭐</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-white">
+                    <h6 class="m-0 font-weight-bold text-primary">Đối tượng liên quan</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="text-muted small text-uppercase d-block">Khách hàng</label>
+                        <a href="#" class="font-weight-bold">Nguyễn Văn A (KH001)</a>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small text-uppercase d-block">Hóa đơn</label>
+                        <a href="#" class="text-dark font-weight-bold">HD001</a>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small text-uppercase d-block">Người phụ trách</label>
+                        <span class="text-dark">Nhân viên chăm sóc khách hàng (crm01)</span>
+                    </div>
+                    <div class="mb-0">
+                        <label class="text-muted small text-uppercase d-block">Ngày tạo</label>
+                        <span class="text-dark">10/05/2026 18:18</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
