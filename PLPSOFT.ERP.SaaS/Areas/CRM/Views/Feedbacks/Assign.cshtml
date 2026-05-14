@@ -1,0 +1,67 @@
+@model PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Feedback.AssignFeedbackDto
+
+@{
+    ViewData["Title"] = "Gán nhân viên xử lý";
+    var formData = ViewBag.FormData as PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Feedback.FeedbackFormDataDto;
+    var detail = ViewBag.Detail as PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Feedback.FeedbackDetailDto;
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Gán nhân viên xử lý</h1>
+        <a asp-action="Details" asp-route-id="@Model.FeedbackID" class="btn btn-secondary btn-sm shadow-sm"> Quay lại chi tiết</a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-white">
+                    <h6 class="m-0 font-weight-bold text-primary">Thông tin phản hồi</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="text-muted small text-uppercase d-block">Tiêu đề</label>
+                        <span class="font-weight-bold text-dark">@detail?.Title</span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small text-uppercase d-block">Khách hàng</label>
+                        <span class="text-dark">@detail?.CustomerName</span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small text-uppercase d-block">Nhân viên hiện tại</label>
+                        <span class="badge bg-light text-dark border">@(detail?.AssignedToUserName ?? "Chưa gán")</span>
+                    </div>
+                    <hr />
+                    <form asp-action="Assign" asp-route-id="@Model.FeedbackID" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="FeedbackID" />
+
+                        <div class="mb-4">
+                            <label asp-for="AssignedToUserID" class="form-label font-weight-bold">Chọn nhân viên xử lý mới <span class="text-danger">*</span></label>
+                            <select asp-for="AssignedToUserID" class="form-select border-primary" required>
+                                <option value="">-- Chọn nhân viên --</option>
+                                @if (formData?.Users != null)
+                                {
+                                    foreach (var item in formData.Users)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="AssignedToUserID" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Xác nhận gán nhân viên</button>
+                            <a asp-action="Details" asp-route-id="@Model.FeedbackID" class="btn btn-outline-secondary">Hủy bỏ</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

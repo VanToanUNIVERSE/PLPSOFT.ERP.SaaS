@@ -1,4 +1,5 @@
-﻿@{
+@model CrmDashboardDto
+@{
     ViewData["Title"] = "CRM Dashboard";
 }
 
@@ -12,7 +13,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Tổng phản hồi mới</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">12</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalNewFeedbacks</div>
                         </div>
                         <div class="col-auto">
                             <span class="fs-3">💬</span>
@@ -29,7 +30,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Lịch hẹn sắp tới</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">8</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalUpcomingSchedules</div>
                         </div>
                         <div class="col-auto">
                             <span class="fs-3">📅</span>
@@ -46,7 +47,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Lịch quá hạn</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">3</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalOverdueSchedules</div>
                         </div>
                         <div class="col-auto">
                             <span class="fs-3">⚠️</span>
@@ -63,6 +64,7 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center bg-white">
                     <h6 class="m-0 font-weight-bold text-primary">Phản hồi gần đây</h6>
+                    <a href="@Url.Action("Index", "Feedbacks")" class="btn btn-sm btn-primary">Xem tất cả</a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -72,16 +74,39 @@
                                     <th>Khách hàng</th>
                                     <th>Tiêu đề</th>
                                     <th>Mức độ</th>
-                                    <th>Trạng thái</th>
+                                    <th>Ngày tạo</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>Nguyễn Văn A</td>
-                                    <td>Sản phẩm lỗi</td>
-                                    <td><span class="badge bg-danger">Khẩn cấp</span></td>
-                                    <td><span class="badge bg-warning text-dark">Mới</span></td>
-                                </tr>
+                                @if (Model.RecentFeedbacks != null && Model.RecentFeedbacks.Any())
+                                {
+                                    foreach (var item in Model.RecentFeedbacks)
+                                    {
+                                        <tr>
+                                            <td>@item.CustomerName</td>
+                                            <td>@item.Title</td>
+                                            <td>
+                                                @{
+                                                    var priorityClass = item.PriorityName switch
+                                                    {
+                                                        "Khẩn cấp" => "bg-danger",
+                                                        "Cao" => "bg-warning text-dark",
+                                                        "Trung bình" => "bg-info",
+                                                        _ => "bg-secondary"
+                                                    };
+                                                }
+                                                <span class="badge @priorityClass">@item.PriorityName</span>
+                                            </td>
+                                            <td>@item.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="4" class="text-center">Chưa có phản hồi nào</td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -96,12 +121,8 @@
                 </div>
                 <div class="card-body">
                     <div class="list-group list-group-flush">
-                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
-                            <div>
-                                <h6 class="mb-0">Gọi điện tư vấn KH001</h6>
-                                <small class="text-muted">14:00 - 14:30</small>
-                            </div>
-                            <span class="badge bg-primary rounded-pill">Call</span>
+                        <div class="text-center py-4 text-muted">
+                            <p class="mb-0">Dữ liệu lịch hẹn đang được cập nhật...</p>
                         </div>
                     </div>
                 </div>

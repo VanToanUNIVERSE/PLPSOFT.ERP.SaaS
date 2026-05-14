@@ -1,4 +1,4 @@
-﻿@model dynamic
+@model dynamic
 
 @{
     ViewData["Title"] = "Tạo Lịch chăm sóc mới";
@@ -21,7 +21,13 @@
                         <label class="form-label fw-bold">Khách hàng <span class="text-danger">*</span></label>
                         <select class="form-select" name="CustomerID" required>
                             <option value="">-- Chọn khách hàng --</option>
-                            <option value="1">KH001 - Nguyễn Văn A</option>
+                            @if (ViewBag.FormData?.Customers != null)
+                            {
+                                foreach (var item in ViewBag.FormData.Customers)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
                         </select>
                     </div>
                     <div class="col-md-6">
@@ -54,7 +60,13 @@
                         <label class="form-label fw-bold">Người phụ trách <span class="text-danger">*</span></label>
                         <select class="form-select" name="AssignedToUserID" required>
                             <option value="">-- Chọn nhân viên --</option>
-                            <option value="2" selected>crm01 - Nhân viên CSKH</option>
+                            @if (ViewBag.FormData?.Users != null)
+                            {
+                                foreach (var item in ViewBag.FormData.Users)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
                         </select>
                     </div>
                 </div>

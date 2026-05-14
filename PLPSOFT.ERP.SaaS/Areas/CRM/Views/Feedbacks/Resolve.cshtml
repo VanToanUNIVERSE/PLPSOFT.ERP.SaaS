@@ -1,0 +1,86 @@
+@model PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Feedback.ResolveFeedbackDto
+
+@{
+    ViewData["Title"] = "Xử lý phản hồi";
+    var formData = ViewBag.FormData as PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Feedback.FeedbackFormDataDto;
+    var detail = ViewBag.Detail as PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Feedback.FeedbackDetailDto;
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Xử lý / Đóng phản hồi</h1>
+        <a asp-action="Details" asp-route-id="@Model.FeedbackID" class="btn btn-secondary btn-sm shadow-sm"> Quay lại chi tiết</a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-white">
+                    <h6 class="m-0 font-weight-bold text-primary">Thông tin phản hồi cần xử lý</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="text-muted small text-uppercase d-block">Tiêu đề</label>
+                        <span class="font-weight-bold text-dark">@detail?.Title</span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small text-uppercase d-block">Khách hàng</label>
+                        <span class="text-dark">@detail?.CustomerName</span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small text-uppercase d-block">Nội dung phản hồi</label>
+                        <p class="text-dark bg-light p-3 border rounded">@detail?.Content</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-success text-white">
+                    <h6 class="m-0 font-weight-bold">Nhập thông tin giải quyết</h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Resolve" asp-route-id="@Model.FeedbackID" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="FeedbackID" />
+
+                        <div class="mb-4">
+                            <label asp-for="StatusID" class="form-label font-weight-bold">Trạng thái sau xử lý <span class="text-danger">*</span></label>
+                            <select asp-for="StatusID" class="form-select border-success" required>
+                                <option value="">-- Chọn trạng thái --</option>
+                                @if (formData?.Statuses != null)
+                                {
+                                    foreach (var item in formData.Statuses)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="StatusID" class="text-danger small"></span>
+                            <small class="text-muted">Thường chọn 'Đã giải quyết' hoặc 'Đã đóng'.</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Resolution" class="form-label font-weight-bold">Nội dung xử lý / Kết quả <span class="text-danger">*</span></label>
+                            <textarea asp-for="Resolution" class="form-control" rows="6" placeholder="Mô tả chi tiết cách đã giải quyết vấn đề cho khách hàng..." required></textarea>
+                            <span asp-validation-for="Resolution" class="text-danger small"></span>
+                        </div>
+
+                        <hr />
+                        <div class="d-flex justify-content-end">
+                            <a asp-action="Details" asp-route-id="@Model.FeedbackID" class="btn btn-secondary me-2">Hủy bỏ</a>
+                            <button type="submit" class="btn btn-success px-5">
+                                <i class="fas fa-check-circle me-1"></i> Hoàn tất xử lý
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
