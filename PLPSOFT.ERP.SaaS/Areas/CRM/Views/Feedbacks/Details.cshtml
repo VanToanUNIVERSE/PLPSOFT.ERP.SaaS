@@ -1,0 +1,37 @@
+@model PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Feedback.FeedbackDetailDto
+
+@{
+    ViewData["Title"] = "Chi tiết phản hồi #" + Model.FeedbackID;
+}
+
+<h2>Chi tiết phản hồi #@Model.FeedbackID</h2>
+
+@if (TempData["Success"] != null)
+{
+    <p style="color:green">@TempData["Success"]</p>
+}
+
+<table border="1" cellpadding="5">
+    <tr><th>Công ty</th><td>@Model.CompanyName</td></tr>
+    <tr><th>Chi nhánh</th><td>@Model.BranchName</td></tr>
+    <tr><th>Khách hàng</th><td>@Model.CustomerName</td></tr>
+    <tr><th>Điện thoại</th><td>@Model.CustomerPhone</td></tr>
+    <tr><th>Email</th><td>@Model.CustomerEmail</td></tr>
+    <tr><th>Hóa đơn</th><td>@(Model.InvoiceCode ?? "Không có")</td></tr>
+    <tr><th>Loại phản hồi</th><td>@Model.FeedbackTypeName</td></tr>
+    <tr><th>Mức ưu tiên</th><td>@Model.PriorityName</td></tr>
+    <tr><th>Trạng thái</th><td>@Model.StatusName</td></tr>
+    <tr><th>Đánh giá</th><td>@Model.Rating / 5</td></tr>
+    <tr><th>Tiêu đề</th><td>@Model.Title</td></tr>
+    <tr><th>Nội dung</th><td>@Model.Content</td></tr>
+    <tr><th>Nhân viên xử lý</th><td>@(Model.AssignedToUserName ?? "Chưa gán")</td></tr>
+    <tr><th>Kết quả xử lý</th><td>@(Model.Resolution ?? "Chưa xử lý")</td></tr>
+    <tr><th>Ngày tạo</th><td>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td></tr>
+    <tr><th>Ngày giải quyết</th><td>@(Model.ResolvedAt?.ToString("dd/MM/yyyy HH:mm") ?? "Chưa giải quyết")</td></tr>
+</table>
+
+<br />
+<a asp-action="Edit"    asp-route-id="@Model.FeedbackID">Sửa</a> |
+<a asp-action="Assign"  asp-route-id="@Model.FeedbackID">Gán nhân viên</a> |
+<a asp-action="Resolve" asp-route-id="@Model.FeedbackID">Xử lý / Đóng</a> |
+<a asp-action="Index">Quay lại danh sách</a>

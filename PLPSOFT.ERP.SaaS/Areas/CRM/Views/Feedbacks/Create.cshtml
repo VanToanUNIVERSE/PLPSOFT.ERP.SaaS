@@ -1,0 +1,124 @@
+@model PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Feedback.CreateFeedbackDto
+
+@{
+    ViewData["Title"] = "Tạo phản hồi mới";
+    var formData = ViewBag.FormData as PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Feedback.FeedbackFormDataDto;
+}
+
+<h2>Tạo phản hồi mới</h2>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div style="color:red; border:1px solid red; padding:10px; margin-bottom:10px;">
+        <strong>Có lỗi xảy ra:</strong>
+        <ul>
+            @foreach (var state in ViewData.ModelState.Values)
+            {
+                @foreach (var error in state.Errors)
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            }
+        </ul>
+    </div>
+}
+
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="CompanyID" />
+    <input type="hidden" asp-for="BranchID" />
+
+    <table>
+        <tr>
+            <td><label asp-for="CustomerID">Khách hàng *</label></td>
+            <td>
+                <select asp-for="CustomerID" style="width:300px">
+                    <option value="">-- Chọn khách hàng --</option>
+                    @foreach (var item in formData!.Customers)
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
+                <span asp-validation-for="CustomerID" style="color:red"></span>
+            </td>
+        </tr>
+        <tr>
+            <td><label asp-for="FeedbackTypeID">Loại phản hồi *</label></td>
+            <td>
+                <select asp-for="FeedbackTypeID" style="width:300px">
+                    <option value="">-- Chọn loại --</option>
+                    @foreach (var item in formData!.FeedbackTypes)
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
+                <span asp-validation-for="FeedbackTypeID" style="color:red"></span>
+            </td>
+        </tr>
+        <tr>
+            <td><label asp-for="PriorityID">Mức độ ưu tiên *</label></td>
+            <td>
+                <select asp-for="PriorityID" style="width:300px">
+                    <option value="">-- Chọn mức độ --</option>
+                    @foreach (var item in formData!.Priorities)
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
+                <span asp-validation-for="PriorityID" style="color:red"></span>
+            </td>
+        </tr>
+        <tr>
+            <td><label asp-for="StatusID">Trạng thái *</label></td>
+            <td>
+                <select asp-for="StatusID" style="width:300px">
+                    <option value="">-- Chọn trạng thái --</option>
+                    @foreach (var item in formData!.Statuses)
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
+                <span asp-validation-for="StatusID" style="color:red"></span>
+            </td>
+        </tr>
+        <tr>
+            <td><label asp-for="AssignedToUserID">Nhân viên xử lý</label></td>
+            <td>
+                <select asp-for="AssignedToUserID" style="width:300px">
+                    <option value="">-- Chưa gán --</option>
+                    @foreach (var item in formData!.Users)
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td><label asp-for="Rating">Đánh giá (1-5) *</label></td>
+            <td>
+                <input asp-for="Rating" type="number" min="1" max="5" style="width:60px" />
+                <span asp-validation-for="Rating" style="color:red"></span>
+            </td>
+        </tr>
+        <tr>
+            <td><label asp-for="Title">Tiêu đề *</label></td>
+            <td>
+                <input asp-for="Title" type="text" style="width:300px"
+                       placeholder="Nhập tiêu đề phản hồi..." />
+                <span asp-validation-for="Title" style="color:red"></span>
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top"><label asp-for="Content">Nội dung phản hồi *</label></td>
+            <td>
+                <textarea asp-for="Content" rows="5" style="width:300px"
+                          placeholder="Nhập nội dung chi tiết phản hồi..."></textarea>
+                <span asp-validation-for="Content" style="color:red"></span>
+            </td>
+        </tr>
+    </table>
+
+    <br />
+    <button type="submit">Tạo phản hồi</button>
+    <a asp-action="Index">Hủy</a>
+</form>

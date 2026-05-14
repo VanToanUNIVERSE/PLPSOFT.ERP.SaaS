@@ -1,0 +1,58 @@
+@model List<PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Feedback.FeedbackListItemDto>
+
+@{
+    ViewData["Title"] = "Danh sách phản hồi khách hàng";
+}
+
+<h2>Danh sách phản hồi khách hàng</h2>
+
+@if (TempData["Success"] != null)
+{
+    <p style="color:green">@TempData["Success"]</p>
+}
+
+<a asp-action="Create">+ Tạo phản hồi mới</a>
+
+<table border="1" cellpadding="5">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Khách hàng</th>
+            <th>Tiêu đề</th>
+            <th>Loại</th>
+            <th>Ưu tiên</th>
+            <th>Trạng thái</th>
+            <th>Đánh giá</th>
+            <th>Nhân viên xử lý</th>
+            <th>Ngày tạo</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.FeedbackID</td>
+                <td>@item.CustomerName</td>
+                <td>@item.Title</td>
+                <td>@item.FeedbackTypeName</td>
+                <td>@item.PriorityName</td>
+                <td>@item.StatusName</td>
+                <td>@item.Rating / 5</td>
+                <td>@(item.AssignedToUserName ?? "Chưa gán")</td>
+                <td>@item.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.FeedbackID">Xem</a> |
+                    <a asp-action="Edit"    asp-route-id="@item.FeedbackID">Sửa</a> |
+                    <a asp-action="Assign"  asp-route-id="@item.FeedbackID">Gán</a> |
+                    <a asp-action="Resolve" asp-route-id="@item.FeedbackID">Xử lý</a> |
+                    <form asp-action="Delete" asp-route-id="@item.FeedbackID" method="post" style="display:inline"
+                          onsubmit="return confirm('Xác nhận xóa phản hồi này?')">
+                        @Html.AntiForgeryToken()
+                        <button type="submit">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

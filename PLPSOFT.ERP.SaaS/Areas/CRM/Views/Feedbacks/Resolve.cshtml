@@ -1,0 +1,40 @@
+@model PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Feedback.ResolveFeedbackDto
+
+@{
+    ViewData["Title"] = "Xử lý phản hồi";
+    var formData = ViewBag.FormData as PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Feedback.FeedbackFormDataDto;
+    var detail   = ViewBag.Detail   as PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Feedback.FeedbackDetailDto;
+}
+
+<h2>Xử lý / Đóng phản hồi</h2>
+
+<p>Phản hồi: <strong>@detail?.Title</strong></p>
+<p>Khách hàng: <strong>@detail?.CustomerName</strong></p>
+<p>Nội dung: @detail?.Content</p>
+
+<form asp-action="Resolve" asp-route-id="@Model.FeedbackID" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="FeedbackID" />
+
+    <div>
+        <label asp-for="StatusID">Trạng thái sau xử lý</label>
+        <select asp-for="StatusID">
+            <option value="">-- Chọn trạng thái --</option>
+            @foreach (var item in formData!.Statuses)
+            {
+                <option value="@item.Value">@item.Text</option>
+            }
+        </select>
+        <span asp-validation-for="StatusID" style="color:red"></span>
+    </div>
+
+    <div>
+        <label asp-for="Resolution">Nội dung xử lý / Kết quả</label>
+        <textarea asp-for="Resolution" rows="5" placeholder="Mô tả cách đã giải quyết phản hồi..."></textarea>
+        <span asp-validation-for="Resolution" style="color:red"></span>
+    </div>
+
+    <br />
+    <button type="submit">Xác nhận xử lý</button>
+    <a asp-action="Details" asp-route-id="@Model.FeedbackID">Hủy</a>
+</form>

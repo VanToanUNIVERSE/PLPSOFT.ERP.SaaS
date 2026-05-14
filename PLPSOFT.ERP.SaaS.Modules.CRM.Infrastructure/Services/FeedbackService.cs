@@ -175,5 +175,45 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
 
             await _context.SaveChangesAsync();
         }
+
+        // =====================================================
+        // DỮ LIỆU DROPDOWN CHO FORM
+        // =====================================================
+        public async Task<FeedbackFormDataDto> GetFormDataAsync(long companyId)
+        {
+            var customers = await _context.Customers
+                .Where(c => c.CompanyID == companyId)
+                .Select(c => new DropdownItem { Value = c.CustomerID, Text = c.CustomerName })
+                .ToListAsync();
+
+            var users = await _context.Users
+                .Where(u => u.CompanyID == companyId)
+                .Select(u => new DropdownItem { Value = u.UserID, Text = u.FullName })
+                .ToListAsync();
+
+            var feedbackTypes = await _context.SystemTypeValues
+                .Where(v => v.Type!.TypeCode == "FEEDBACK_TYPE" && v.IsActive)
+                .Select(v => new DropdownItem { Value = v.TypeValueID, Text = v.ValueName })
+                .ToListAsync();
+
+            var priorities = await _context.SystemTypeValues
+                .Where(v => v.Type!.TypeCode == "PRIORITY" && v.IsActive)
+                .Select(v => new DropdownItem { Value = v.TypeValueID, Text = v.ValueName })
+                .ToListAsync();
+
+            var statuses = await _context.SystemTypeValues
+                .Where(v => v.Type!.TypeCode == "CRM_STATUS" && v.IsActive)
+                .Select(v => new DropdownItem { Value = v.TypeValueID, Text = v.ValueName })
+                .ToListAsync();
+
+            return new FeedbackFormDataDto
+            {
+                Customers    = customers,
+                Users        = users,
+                FeedbackTypes = feedbackTypes,
+                Priorities   = priorities,
+                Statuses     = statuses
+            };
+        }
     }
 }

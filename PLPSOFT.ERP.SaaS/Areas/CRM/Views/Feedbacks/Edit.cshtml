@@ -1,0 +1,70 @@
+@model PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Feedback.UpdateFeedbackDto
+
+@{
+    ViewData["Title"] = "Chỉnh sửa phản hồi";
+    var formData = ViewBag.FormData as PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Feedback.FeedbackFormDataDto;
+    var detail   = ViewBag.Detail   as PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Feedback.FeedbackDetailDto;
+}
+
+<h2>Chỉnh sửa phản hồi #@Model.FeedbackID</h2>
+<p>Khách hàng: <strong>@detail?.CustomerName</strong></p>
+
+<form asp-action="Edit" asp-route-id="@Model.FeedbackID" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="FeedbackID" />
+
+    <div>
+        <label asp-for="FeedbackTypeID">Loại phản hồi</label>
+        <select asp-for="FeedbackTypeID">
+            @foreach (var item in formData!.FeedbackTypes)
+            {
+                <option value="@item.Value">@item.Text</option>
+            }
+        </select>
+        <span asp-validation-for="FeedbackTypeID" style="color:red"></span>
+    </div>
+
+    <div>
+        <label asp-for="PriorityID">Mức độ ưu tiên</label>
+        <select asp-for="PriorityID">
+            @foreach (var item in formData!.Priorities)
+            {
+                <option value="@item.Value">@item.Text</option>
+            }
+        </select>
+        <span asp-validation-for="PriorityID" style="color:red"></span>
+    </div>
+
+    <div>
+        <label asp-for="StatusID">Trạng thái</label>
+        <select asp-for="StatusID">
+            @foreach (var item in formData!.Statuses)
+            {
+                <option value="@item.Value">@item.Text</option>
+            }
+        </select>
+        <span asp-validation-for="StatusID" style="color:red"></span>
+    </div>
+
+    <div>
+        <label asp-for="Rating">Đánh giá (1-5)</label>
+        <input asp-for="Rating" type="number" min="1" max="5" />
+        <span asp-validation-for="Rating" style="color:red"></span>
+    </div>
+
+    <div>
+        <label asp-for="Title">Tiêu đề</label>
+        <input asp-for="Title" type="text" />
+        <span asp-validation-for="Title" style="color:red"></span>
+    </div>
+
+    <div>
+        <label asp-for="Content">Nội dung phản hồi</label>
+        <textarea asp-for="Content" rows="5"></textarea>
+        <span asp-validation-for="Content" style="color:red"></span>
+    </div>
+
+    <br />
+    <button type="submit">Lưu thay đổi</button>
+    <a asp-action="Details" asp-route-id="@Model.FeedbackID">Hủy</a>
+</form>

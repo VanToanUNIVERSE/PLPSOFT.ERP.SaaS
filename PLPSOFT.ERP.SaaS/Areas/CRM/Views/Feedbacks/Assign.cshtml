@@ -1,0 +1,34 @@
+@model PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Feedback.AssignFeedbackDto
+
+@{
+    ViewData["Title"] = "Gán nhân viên xử lý";
+    var formData = ViewBag.FormData as PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Feedback.FeedbackFormDataDto;
+    var detail   = ViewBag.Detail   as PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Feedback.FeedbackDetailDto;
+}
+
+<h2>Gán nhân viên xử lý</h2>
+
+<p>Phản hồi: <strong>@detail?.Title</strong></p>
+<p>Khách hàng: <strong>@detail?.CustomerName</strong></p>
+<p>Nhân viên hiện tại: <strong>@(detail?.AssignedToUserName ?? "Chưa gán")</strong></p>
+
+<form asp-action="Assign" asp-route-id="@Model.FeedbackID" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="FeedbackID" />
+
+    <div>
+        <label asp-for="AssignedToUserID">Chọn nhân viên xử lý</label>
+        <select asp-for="AssignedToUserID">
+            <option value="">-- Chọn nhân viên --</option>
+            @foreach (var item in formData!.Users)
+            {
+                <option value="@item.Value">@item.Text</option>
+            }
+        </select>
+        <span asp-validation-for="AssignedToUserID" style="color:red"></span>
+    </div>
+
+    <br />
+    <button type="submit">Xác nhận gán</button>
+    <a asp-action="Details" asp-route-id="@Model.FeedbackID">Hủy</a>
+</form>

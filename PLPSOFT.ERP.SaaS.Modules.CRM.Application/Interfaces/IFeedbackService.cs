@@ -24,5 +24,9 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Application.Interfaces
 
         /// <summary>Xóa mềm phản hồi</summary>
         Task DeleteAsync(long feedbackId);
+
+        /// <summary>Lấy dữ liệu dropdown cho form tạo mới / chỉnh sửa</summary>
+        Task<FeedbackFormDataDto> GetFormDataAsync(long companyId);
     }
 }
+
