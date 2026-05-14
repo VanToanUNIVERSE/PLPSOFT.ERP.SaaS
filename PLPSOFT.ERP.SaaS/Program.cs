@@ -1,7 +1,10 @@
+using PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddCrmInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
