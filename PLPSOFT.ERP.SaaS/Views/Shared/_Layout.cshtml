@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -21,6 +21,18 @@
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown">
+                                CRM
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-area="CRM" asp-controller="Schedules" asp-action="Index">📋 Danh sách lịch</a></li>
+                                <li><a class="dropdown-item" asp-area="CRM" asp-controller="Schedules" asp-action="Create">➕ Tạo lịch mới</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" asp-area="CRM" asp-controller="Schedules" asp-action="Overdue">⚠️ Lịch quá hạn</a></li>
+                                <li><a class="dropdown-item" asp-area="CRM" asp-controller="Schedules" asp-action="Upcoming">📅 Lịch sắp tới</a></li>
+                            </ul>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>

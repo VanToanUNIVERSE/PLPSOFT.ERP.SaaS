@@ -1,0 +1,181 @@
+@model List<ScheduleListViewModel>
+@{
+    ViewData["Title"] = "Danh sách lịch chăm sóc";
+    var filter = ViewBag.Filter as ScheduleFilterDto;
+    var users = ViewBag.Users as List<DropdownItem> ?? new List<DropdownItem>();
+    var customers = ViewBag.Customers as List<DropdownItem> ?? new List<DropdownItem>();
+    var scheduleTypes = ViewBag.ScheduleTypes as List<DropdownItem> ?? new List<DropdownItem>();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">📋 Danh sách lịch chăm sóc</h2>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> ➕ Tạo lịch mới
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Bộ lọc nhanh -->
+<div class="card mb-4">
+    <div class="card-header bg-light">
+        <strong>🔍 Bộ lọc</strong>
+    </div>
+    <div class="card-body">
+        <form method="get" asp-action="Index">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Người phụ trách</label>
+                    <select name="assignedToUserID" class="form-select">
+                        <option value="">-- Tất cả --</option>
+                        @foreach (var u in users)
+                        {
+                            <option value="@u.Value" selected="@(filter?.AssignedToUserID == u.Value)">@u.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Khách hàng</label>
+                    <select name="customerID" class="form-select">
+                        <option value="">-- Tất cả --</option>
+                        @foreach (var c in customers)
+                        {
+                            <option value="@c.Value" selected="@(filter?.CustomerID == c.Value)">@c.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Loại lịch</label>
+                    <select name="scheduleTypeID" class="form-select">
+                        <option value="">-- Tất cả --</option>
+                        @foreach (var t in scheduleTypes)
+                        {
+                            <option value="@t.Value" selected="@(filter?.ScheduleTypeID == t.Value)">@t.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Từ ngày</label>
+                    <input type="date" name="fromDate" class="form-control" value="@(filter?.FromDate?.ToString("yyyy-MM-dd"))" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Đến ngày</label>
+                    <input type="date" name="toDate" class="form-control" value="@(filter?.ToDate?.ToString("yyyy-MM-dd"))" />
+                </div>
+                <div class="col-md-9 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-outline-primary">🔍 Lọc</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">🔄 Đặt lại</a>
+                    <a asp-action="Overdue" class="btn btn-outline-danger">⚠️ Quá hạn</a>
+                    <a asp-action="Upcoming" class="btn btn-outline-warning">📅 Hôm nay</a>
+                    <a asp-action="Upcoming" asp-route-thisWeek="true" class="btn btn-outline-info">📆 Tuần này</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Bảng danh sách -->
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width: 50px;">#</th>
+                        <th>Tiêu đề</th>
+                        <th>Khách hàng</th>
+                        <th>Loại</th>
+                        <th>Người phụ trách</th>
+                        <th>Thời gian bắt đầu</th>
+                        <th>Trạng thái</th>
+                        <th style="width: 200px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        int stt = 1;
+                        @foreach (var item in Model)
+                        {
+                            <tr class="@(item.IsOverdue ? "table-danger" : "")">
+                                <td>@(stt++)</td>
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@item.ScheduleID" class="text-decoration-none fw-bold">
+                                        @item.Title
+                                    </a>
+                                    @if (item.IsOverdue)
+                                    {
+                                        <span class="badge bg-danger ms-1">Quá hạn</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="text-muted">@item.CustomerCode</span> - @item.CustomerName
+                                </td>
+                                <td><span class="badge bg-info text-dark">@item.ScheduleTypeName</span></td>
+                                <td>@item.AssignedToUserName</td>
+                                <td>@item.StartTime.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    @{
+                                        var badgeClass = item.StatusCode switch
+                                        {
+                                            "PLANNED" => "bg-primary",
+                                            "COMPLETED" => "bg-success",
+                                            "CANCELED" => "bg-secondary",
+                                            _ => "bg-warning"
+                                        };
+                                    }
+                                    <span class="badge @badgeClass">@item.StatusName</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-action="Details" asp-route-id="@item.ScheduleID" class="btn btn-outline-primary" title="Chi tiết">👁️</a>
+                                        @if (item.StatusCode == "PLANNED")
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@item.ScheduleID" class="btn btn-outline-warning" title="Sửa">✏️</a>
+                                            <form asp-action="Complete" asp-route-id="@item.ScheduleID" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-outline-success" title="Hoàn thành" onclick="return confirm('Xác nhận hoàn thành lịch này?')">✅</button>
+                                            </form>
+                                            <form asp-action="Cancel" asp-route-id="@item.ScheduleID" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-outline-danger" title="Hủy" onclick="return confirm('Xác nhận hủy lịch này?')">❌</button>
+                                            </form>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-muted">
+                                <h5>📭 Không có lịch chăm sóc nào.</h5>
+                                <a asp-action="Create" class="btn btn-primary mt-2">➕ Tạo lịch mới</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @if (Model != null)
+    {
+        <div class="card-footer text-muted">
+            Tổng: <strong>@Model.Count</strong> lịch chăm sóc
+        </div>
+    }
+</div>

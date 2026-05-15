@@ -1,0 +1,114 @@
+@model ScheduleFormViewModel
+@{
+    ViewData["Title"] = "Tạo lịch chăm sóc mới";
+    var dto = Model.CreateDto ?? new CreateScheduleDto();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">➕ Tạo lịch chăm sóc mới</h2>
+    <a asp-action="Index" class="btn btn-outline-secondary">← Quay lại danh sách</a>
+</div>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <strong>📝 Thông tin lịch chăm sóc</strong>
+    </div>
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="CompanyID" value="@dto.CompanyID" />
+            <input type="hidden" name="CreatedByUserID" value="@dto.CreatedByUserID" />
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label class="form-label fw-bold">Tiêu đề <span class="text-danger">*</span></label>
+                    <input type="text" name="Title" class="form-control" value="@dto.Title" placeholder="VD: Gọi điện chăm sóc khách KH001" required />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Khách hàng <span class="text-danger">*</span></label>
+                    <select name="CustomerID" class="form-select" required>
+                        <option value="">-- Chọn khách hàng --</option>
+                        @foreach (var c in Model.Customers)
+                        {
+                            <option value="@c.Value" selected="@(dto.CustomerID == c.Value)">@c.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Chi nhánh <span class="text-danger">*</span></label>
+                    <select name="BranchID" class="form-select" required>
+                        <option value="">-- Chọn chi nhánh --</option>
+                        @foreach (var b in Model.Branches)
+                        {
+                            <option value="@b.Value" selected="@(dto.BranchID == b.Value)">@b.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Loại lịch <span class="text-danger">*</span></label>
+                    <select name="ScheduleTypeID" class="form-select" required>
+                        <option value="">-- Chọn loại lịch --</option>
+                        @foreach (var t in Model.ScheduleTypes)
+                        {
+                            <option value="@t.Value" selected="@(dto.ScheduleTypeID == t.Value)">@t.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Người phụ trách <span class="text-danger">*</span></label>
+                    <select name="AssignedToUserID" class="form-select" required>
+                        <option value="">-- Chọn người phụ trách --</option>
+                        @foreach (var u in Model.Users)
+                        {
+                            <option value="@u.Value" selected="@(dto.AssignedToUserID == u.Value)">@u.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Thời gian bắt đầu <span class="text-danger">*</span></label>
+                    <input type="datetime-local" name="StartTime" class="form-control" value="@dto.StartTime.ToString("yyyy-MM-ddTHH:mm")" required />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Thời gian kết thúc <span class="text-danger">*</span></label>
+                    <input type="datetime-local" name="EndTime" class="form-control" value="@dto.EndTime.ToString("yyyy-MM-ddTHH:mm")" required />
+                    <span class="text-danger" id="endTimeError"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Mô tả</label>
+                <textarea name="Description" class="form-control" rows="3" placeholder="Ghi chú thêm về lịch chăm sóc...">@dto.Description</textarea>
+            </div>
+
+            <hr />
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary btn-lg">💾 Tạo lịch</button>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-lg">Hủy</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
