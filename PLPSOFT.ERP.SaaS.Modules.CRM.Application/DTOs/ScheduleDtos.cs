@@ -105,8 +105,7 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs
         public long? CustomerID { get; set; }
         public long? ScheduleTypeID { get; set; }
         public long? StatusID { get; set; }
-        public DateTime? FromDate { get; set; }
-        public DateTime? ToDate { get; set; }
+        public string? TimeFilter { get; set; }
     }
 
     /// <summary>

@@ -29,7 +29,7 @@ namespace PLPSOFT.ERP.SaaS.Areas.CRM.Controllers
             
             data.TotalUpcomingSchedules = upcoming.Count;
             data.TotalOverdueSchedules = overdue.Count;
-            data.TodaySchedules = upcoming.Where(s => s.StartTime.Date == System.DateTime.Today).Take(5).ToList();
+            data.TodaySchedules = upcoming.Take(5).ToList();
 
             return View(data);
         }

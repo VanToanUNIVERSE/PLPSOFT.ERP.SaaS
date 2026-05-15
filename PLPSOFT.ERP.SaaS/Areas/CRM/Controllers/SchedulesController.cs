@@ -30,8 +30,7 @@ namespace PLPSOFT.ERP.SaaS.Areas.CRM.Controllers
             long? customerID,
             long? scheduleTypeID,
             long? statusID,
-            DateTime? fromDate,
-            DateTime? toDate)
+            string? timeFilter)
         {
             var filter = new ScheduleFilterDto
             {
@@ -39,14 +38,13 @@ namespace PLPSOFT.ERP.SaaS.Areas.CRM.Controllers
                 CustomerID = customerID,
                 ScheduleTypeID = scheduleTypeID,
                 StatusID = statusID,
-                FromDate = fromDate,
-                ToDate = toDate
+                TimeFilter = timeFilter
             };
 
             ViewBag.StatusID = statusID;
             ViewBag.ScheduleTypeID = scheduleTypeID;
-            ViewBag.FromDate = fromDate?.ToString("yyyy-MM-dd");
-            ViewBag.ToDate = toDate?.ToString("yyyy-MM-dd");
+            ViewBag.TimeFilter = timeFilter;
+            ViewBag.AssignedToUserID = assignedToUserID;
 
             var schedules = await _scheduleService.GetAllAsync(filter);
 

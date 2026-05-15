@@ -15,7 +15,7 @@
     <div class="card shadow mb-4">
         <div class="card-body">
             <form class="row g-3" method="get" asp-action="Index">
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label class="form-label small fw-bold">Trạng thái</label>
                     <select class="form-select border-left-info" name="statusID">
                         <option value="">-- Tất cả trạng thái --</option>
@@ -24,19 +24,26 @@
                         <option value="18" selected="@(ViewBag.StatusID == 18 ? "selected" : null)">Đã hủy (CANCELED)</option>
                     </select>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label class="form-label small fw-bold">Loại lịch</label>
                     <select class="form-select" name="scheduleTypeID" asp-items="@(new SelectList(ViewBag.ScheduleTypes, "Value", "Text", ViewBag.ScheduleTypeID))">
                         <option value="">-- Tất cả loại --</option>
                     </select>
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label small fw-bold">Thời gian</label>
-                    <div class="input-group">
-                        <input type="date" class="form-control" name="fromDate" title="Từ ngày" value="@ViewBag.FromDate">
-                        <span class="input-group-text">đến</span>
-                        <input type="date" class="form-control" name="toDate" title="Đến ngày" value="@ViewBag.ToDate">
-                    </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Người phụ trách</label>
+                    <select class="form-select" name="assignedToUserID" asp-items="@(new SelectList(ViewBag.Users, "Value", "Text", ViewBag.AssignedToUserID))">
+                        <option value="">-- Tất cả nhân viên --</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Lọc theo thời gian</label>
+                    <select class="form-select" name="timeFilter">
+                        <option value="">-- Tất cả --</option>
+                        <option value="overdue" selected="@(ViewBag.TimeFilter == "overdue" ? "selected" : null)">Quá hạn (Chưa hoàn thành)</option>
+                        <option value="upcoming_day" selected="@(ViewBag.TimeFilter == "upcoming_day" ? "selected" : null)">Sắp tới (Hôm nay)</option>
+                        <option value="upcoming_week" selected="@(ViewBag.TimeFilter == "upcoming_week" ? "selected" : null)">Sắp tới (Tuần này)</option>
+                    </select>
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
                     <button type="submit" class="btn btn-secondary w-100">Lọc lịch</button>

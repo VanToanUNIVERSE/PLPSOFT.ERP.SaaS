@@ -36,11 +36,29 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
                 if (filter.StatusID.HasValue)
                     query = query.Where(s => s.StatusID == filter.StatusID.Value);
 
-                if (filter.FromDate.HasValue)
-                    query = query.Where(s => s.StartTime >= filter.FromDate.Value);
-
-                if (filter.ToDate.HasValue)
-                    query = query.Where(s => s.StartTime <= filter.ToDate.Value);
+                if (!string.IsNullOrEmpty(filter.TimeFilter))
+                {
+                    var now = DateTime.Now;
+                    if (filter.TimeFilter == "overdue")
+                    {
+                        query = query.Where(s => s.EndTime < now 
+                            && s.Status != null 
+                            && s.Status.ValueCode != "COMPLETED" 
+                            && s.Status.ValueCode != "CANCELED");
+                    }
+                    else if (filter.TimeFilter == "upcoming_day")
+                    {
+                        var endOfDay = now.Date.AddDays(1).AddSeconds(-1);
+                        query = query.Where(s => s.EndTime >= now && s.StartTime <= endOfDay);
+                    }
+                    else if (filter.TimeFilter == "upcoming_week")
+                    {
+                        int daysUntilSunday = ((int)DayOfWeek.Sunday - (int)now.DayOfWeek + 7) % 7;
+                        if (daysUntilSunday == 0) daysUntilSunday = 7;
+                        var endOfWeek = now.Date.AddDays(daysUntilSunday).AddDays(1).AddSeconds(-1);
+                        query = query.Where(s => s.EndTime >= now && s.StartTime <= endOfWeek);
+                    }
+                }
             }
 
             return await ProjectToListViewModel(query)
@@ -87,7 +105,7 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
                     AssignedToUserID = s.AssignedToUserID,
                     AssignedToUserName = s.AssignedToUser != null ? s.AssignedToUser.FullName : "",
 
-                    IsOverdue = s.StartTime < DateTime.Now
+                    IsOverdue = s.EndTime < DateTime.Now
                                 && s.Status != null
                                 && s.Status.ValueCode != "COMPLETED"
                                 && s.Status.ValueCode != "CANCELED"
@@ -212,7 +230,7 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
             var now = DateTime.Now;
 
             var query = BuildBaseQuery()
-                .Where(s => s.StartTime < now
+                .Where(s => s.EndTime < now
                     && s.Status != null
                     && s.Status.ValueCode != "COMPLETED"
                     && s.Status.ValueCode != "CANCELED");
@@ -245,7 +263,7 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
             }
 
             var query = BuildBaseQuery()
-                .Where(s => s.StartTime >= now
+                .Where(s => s.EndTime >= now
                     && s.StartTime <= endRange
                     && s.Status != null
                     && s.Status.ValueCode == "PLANNED");
@@ -370,7 +388,7 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
                 EndTime = s.EndTime,
                 CreatedAt = s.CreatedAt,
                 BranchName = s.Branch != null ? s.Branch.BranchName : "",
-                IsOverdue = s.StartTime < now
+                IsOverdue = s.EndTime < now
                             && s.Status != null
                             && s.Status.ValueCode != "COMPLETED"
                             && s.Status.ValueCode != "CANCELED"
