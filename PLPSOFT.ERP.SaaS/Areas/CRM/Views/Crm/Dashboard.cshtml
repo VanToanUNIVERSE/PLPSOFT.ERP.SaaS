@@ -121,9 +121,25 @@
                 </div>
                 <div class="card-body">
                     <div class="list-group list-group-flush">
-                        <div class="text-center py-4 text-muted">
-                            <p class="mb-0">Dữ liệu lịch hẹn đang được cập nhật...</p>
-                        </div>
+                        @if (Model.TodaySchedules != null && Model.TodaySchedules.Any())
+                        {
+                            foreach (var item in Model.TodaySchedules)
+                            {
+                                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1 text-dark font-weight-bold">@item.Title</h6>
+                                        <small class="text-muted"><i class="fas fa-clock mr-1"></i> @item.StartTime.ToString("HH:mm") | @item.CustomerName</small>
+                                    </div>
+                                    <span class="badge bg-info text-white">@item.ScheduleTypeName</span>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="text-center py-4 text-muted">
+                                <p class="mb-0">Không có lịch hẹn nào hôm nay.</p>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>

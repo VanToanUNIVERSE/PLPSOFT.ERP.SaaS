@@ -11,6 +11,7 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Persistence
 
         // ===== CRM Schema =====
         public DbSet<CustomerFeedback> CustomerFeedbacks { get; set; }
+        public DbSet<CustomerSchedule> CustomerSchedules { get; set; }
 
         // ===== Shared / dbo Schema =====
         public DbSet<Company> Companies { get; set; }

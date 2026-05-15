@@ -1,4 +1,4 @@
-@model dynamic
+@model PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.ScheduleFormViewModel
 
 @{
     ViewData["Title"] = "Cập nhật Lịch chăm sóc";
@@ -16,63 +16,67 @@
         </div>
         <div class="card-body">
             <form asp-controller="Schedules" asp-action="Edit" method="post">
-                <input type="hidden" name="ScheduleID" value="1" />
+                <input type="hidden" asp-for="UpdateDto.ScheduleID" />
+                <input type="hidden" asp-for="UpdateDto.BranchID" />
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger shadow-sm">
+                        <i class="fas fa-exclamation-triangle me-2"></i> Có lỗi xảy ra, vui lòng kiểm tra lại thông tin!
+                        <div asp-validation-summary="All" class="text-danger mt-2 mb-0"></div>
+                    </div>
+                }
 
                 <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Khách hàng</label>
-                        <input type="text" class="form-control bg-light" value="" readonly placeholder="Tên khách hàng">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Trạng thái lịch hẹn <span class="text-danger">*</span></label>
-                        <select class="form-select border-primary" name="StatusID" required>
-                            <option value="">-- Chọn trạng thái --</option>
-                            <option value="PLANNED">Đã lên lịch (PLANNED)</option>
-                            <option value="COMPLETED">Hoàn thành (COMPLETED)</option>
-                            <option value="CANCELED">Đã hủy (CANCELED)</option>
+                    <div class="col-md-12">
+                        <label asp-for="UpdateDto.CustomerID" class="form-label fw-bold">Khách hàng <span class="text-danger">*</span></label>
+                        <select class="form-select" asp-for="UpdateDto.CustomerID" asp-items="@(new SelectList(Model?.Customers, "Value", "Text"))">
+                            <option value="">-- Chọn khách hàng --</option>
                         </select>
+                        <span asp-validation-for="UpdateDto.CustomerID" class="text-danger"></span>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label class="form-label fw-bold">Loại lịch <span class="text-danger">*</span></label>
-                        <select class="form-select" name="ScheduleTypeID" required>
+                        <label asp-for="UpdateDto.ScheduleTypeID" class="form-label fw-bold">Loại lịch <span class="text-danger">*</span></label>
+                        <select class="form-select border-success" asp-for="UpdateDto.ScheduleTypeID" asp-items="@(new SelectList(Model?.ScheduleTypes, "Value", "Text"))">
                             <option value="">-- Chọn loại lịch --</option>
-                            <option value="CALL">Gọi điện (CALL)</option>
-                            <option value="MEETING">Gặp mặt (MEETING)</option>
-                            <option value="REORDER">Nhắc mua lại (REORDER)</option>
-                            <option value="SERVICE">Chăm sóc/Bảo trì (SERVICE)</option>
                         </select>
+                        <span asp-validation-for="UpdateDto.ScheduleTypeID" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label fw-bold">Người phụ trách <span class="text-danger">*</span></label>
-                        <select class="form-select" name="AssignedToUserID" required>
+                        <label asp-for="UpdateDto.AssignedToUserID" class="form-label fw-bold">Người phụ trách <span class="text-danger">*</span></label>
+                        <select class="form-select" asp-for="UpdateDto.AssignedToUserID" asp-items="@(new SelectList(Model?.Users, "Value", "Text"))">
                             <option value="">-- Chọn nhân viên --</option>
-                            @* Dữ liệu danh sách nhân viên sẽ được binding từ Model *@
                         </select>
+                        <span asp-validation-for="UpdateDto.AssignedToUserID" class="text-danger"></span>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold">Tiêu đề công việc <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="Title" value="" placeholder="Nhập tiêu đề công việc" required>
+                    <label asp-for="UpdateDto.Title" class="form-label fw-bold">Tiêu đề công việc <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" asp-for="UpdateDto.Title" placeholder="Nhập tiêu đề công việc...">
+                    <span asp-validation-for="UpdateDto.Title" class="text-danger"></span>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label class="form-label fw-bold">Thời gian bắt đầu <span class="text-danger">*</span></label>
-                        <input type="datetime-local" class="form-control" name="StartTime" value="" required>
+                        <label asp-for="UpdateDto.StartTime" class="form-label fw-bold">Thời gian bắt đầu <span class="text-danger">*</span></label>
+                        <input type="datetime-local" class="form-control" asp-for="UpdateDto.StartTime">
+                        <span asp-validation-for="UpdateDto.StartTime" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label fw-bold">Thời gian kết thúc <span class="text-danger">*</span></label>
-                        <input type="datetime-local" class="form-control" name="EndTime" value="" required>
+                        <label asp-for="UpdateDto.EndTime" class="form-label fw-bold">Thời gian kết thúc <span class="text-danger">*</span></label>
+                        <input type="datetime-local" class="form-control" asp-for="UpdateDto.EndTime">
+                        <span asp-validation-for="UpdateDto.EndTime" class="text-danger"></span>
                     </div>
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label fw-bold">Mô tả chi tiết</label>
-                    <textarea class="form-control" name="Description" rows="4"></textarea>
+                    <label asp-for="UpdateDto.Description" class="form-label fw-bold">Mô tả chi tiết</label>
+                    <textarea class="form-control" asp-for="UpdateDto.Description" rows="4"></textarea>
+                    <span asp-validation-for="UpdateDto.Description" class="text-danger"></span>
                 </div>
 
                 <hr>

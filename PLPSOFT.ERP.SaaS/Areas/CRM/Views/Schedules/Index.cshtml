@@ -7,39 +7,35 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 mb-0 text-gray-800">Quản lý Lịch làm việc & Nhắc hẹn</h1>
-        <a href="@Url.Action("Create", "Schedules")" class="btn btn-success shadow-sm">
-            <i class="fas fa-calendar-plus fa-sm text-white-50"></i> Tạo lịch hẹn mới
+        <a href="@Url.Action("Create", "Schedules")" class="btn btn-primary shadow-sm">
+            <i class="fas fa-plus fa-sm text-white-50"></i> Tạo lịch hẹn mới
         </a>
     </div>
 
     <div class="card shadow mb-4">
         <div class="card-body">
-            <form class="row g-3">
+            <form class="row g-3" method="get" asp-action="Index">
                 <div class="col-md-3">
                     <label class="form-label small fw-bold">Trạng thái</label>
-                    <select class="form-select border-left-info">
+                    <select class="form-select border-left-info" name="statusID">
                         <option value="">-- Tất cả trạng thái --</option>
-                        <option value="PLANNED">Đã lên lịch (PLANNED)</option>
-                        <option value="COMPLETED">Hoàn thành (COMPLETED)</option>
-                        <option value="CANCELED">Đã hủy (CANCELED)</option>
+                        <option value="16" selected="@(ViewBag.StatusID == 16 ? "selected" : null)">Đã lên lịch (PLANNED)</option>
+                        <option value="17" selected="@(ViewBag.StatusID == 17 ? "selected" : null)">Hoàn thành (COMPLETED)</option>
+                        <option value="18" selected="@(ViewBag.StatusID == 18 ? "selected" : null)">Đã hủy (CANCELED)</option>
                     </select>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small fw-bold">Loại lịch</label>
-                    <select class="form-select">
+                    <select class="form-select" name="scheduleTypeID" asp-items="@(new SelectList(ViewBag.ScheduleTypes, "Value", "Text", ViewBag.ScheduleTypeID))">
                         <option value="">-- Tất cả loại --</option>
-                        <option value="CALL">Gọi điện (CALL)</option>
-                        <option value="MEETING">Gặp mặt (MEETING)</option>
-                        <option value="REORDER">Nhắc mua lại (REORDER)</option>
-                        <option value="SERVICE">Chăm sóc/Bảo trì (SERVICE)</option>
                     </select>
                 </div>
                 <div class="col-md-4">
                     <label class="form-label small fw-bold">Thời gian</label>
                     <div class="input-group">
-                        <input type="date" class="form-control" title="Từ ngày">
+                        <input type="date" class="form-control" name="fromDate" title="Từ ngày" value="@ViewBag.FromDate">
                         <span class="input-group-text">đến</span>
-                        <input type="date" class="form-control" title="Đến ngày">
+                        <input type="date" class="form-control" name="toDate" title="Đến ngày" value="@ViewBag.ToDate">
                     </div>
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
@@ -80,9 +76,26 @@
                                     <td>@item.AssignedToUserName</td>
                                     <td><span class="badge bg-primary">@item.StatusName</span></td>
                                     <td class="text-center">
-                                        <a href="@Url.Action("Details", "Schedules", new { id = item.ScheduleID })" class="btn btn-sm btn-outline-info" title="Xem">👁️</a>
-                                        <a href="@Url.Action("Edit", "Schedules", new { id = item.ScheduleID })" class="btn btn-sm btn-outline-warning" title="Sửa">✏️</a>
-                                        <button class="btn btn-sm btn-outline-success" title="Hoàn thành">✅</button>
+                                        <div class="btn-group" role="group">
+                                            <a href="@Url.Action("Details", "Schedules", new { id = item.ScheduleID })" class="btn btn-sm btn-info text-white" title="Xem chi tiết">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="@Url.Action("Edit", "Schedules", new { id = item.ScheduleID })" class="btn btn-sm btn-warning text-white" title="Sửa">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form asp-action="Complete" asp-route-id="@item.ScheduleID" method="post" style="display:inline" onsubmit="return confirm('Xác nhận đánh dấu hoàn thành lịch hẹn này?')">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-success text-white" title="Hoàn thành">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            </form>
+                                            <form asp-action="Delete" asp-route-id="@item.ScheduleID" method="post" style="display:inline" onsubmit="return confirm('Xác nhận xóa lịch hẹn này?')">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-danger text-white" title="Xóa">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             }

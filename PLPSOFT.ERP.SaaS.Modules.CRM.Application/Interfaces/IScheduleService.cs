@@ -35,6 +35,11 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Application.Interfaces
         Task<bool> CancelAsync(long id);
 
         /// <summary>
+        /// Xóa mềm lịch chăm sóc
+        /// </summary>
+        Task<bool> DeleteAsync(long id);
+
+        /// <summary>
         /// Lấy danh sách lịch quá hạn (StartTime đã qua nhưng chưa completed)
         /// </summary>
         Task<List<ScheduleListViewModel>> GetOverdueAsync();

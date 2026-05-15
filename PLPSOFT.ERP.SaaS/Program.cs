@@ -6,6 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddCrmInfrastructure(builder.Configuration);
 
+// builder.Services.AddScoped<PLPSOFT.ERP.SaaS.Modules.CRM.Application.Interfaces.IScheduleService, PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services.ScheduleService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

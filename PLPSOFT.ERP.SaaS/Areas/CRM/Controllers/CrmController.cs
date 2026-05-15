@@ -8,18 +8,29 @@ namespace PLPSOFT.ERP.SaaS.Areas.CRM.Controllers
     public class CrmController : Controller
     {
         private readonly IFeedbackService _feedbackService;
+        private readonly IScheduleService _scheduleService;
         private const long CurrentCompanyID = 1;
         private const long CurrentBranchID = 1;
 
-        public CrmController(IFeedbackService feedbackService)
+        public CrmController(IFeedbackService feedbackService, IScheduleService scheduleService)
         {
             _feedbackService = feedbackService;
+            _scheduleService = scheduleService;
         }
 
         // Đường dẫn sẽ là: /CRM/Crm/Dashboard
         public async Task<IActionResult> Dashboard()
         {
             var data = await _feedbackService.GetDashboardDataAsync(CurrentCompanyID, CurrentBranchID);
+            
+            // Lấy thêm dữ liệu lịch chăm sóc
+            var upcoming = await _scheduleService.GetUpcomingAsync(false);
+            var overdue = await _scheduleService.GetOverdueAsync();
+            
+            data.TotalUpcomingSchedules = upcoming.Count;
+            data.TotalOverdueSchedules = overdue.Count;
+            data.TodaySchedules = upcoming.Where(s => s.StartTime.Date == System.DateTime.Today).Take(5).ToList();
+
             return View(data);
         }
     }

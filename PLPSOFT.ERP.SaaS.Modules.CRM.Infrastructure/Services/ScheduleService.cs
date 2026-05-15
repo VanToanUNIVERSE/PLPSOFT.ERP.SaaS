@@ -8,9 +8,9 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
 {
     public class ScheduleService : IScheduleService
     {
-        private readonly CRMDbContext _context;
+        private readonly CrmDbContext _context;
 
-        public ScheduleService(CRMDbContext context)
+        public ScheduleService(CrmDbContext context)
         {
             _context = context;
         }
@@ -106,8 +106,8 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
             // Lấy StatusID mặc định: PLANNED
             var plannedStatus = await _context.SystemTypeValues
                 .FirstOrDefaultAsync(v => v.ValueCode == "PLANNED"
-                    && v.SystemType != null
-                    && v.SystemType.TypeCode == "SCHEDULE_STATUS");
+                    && v.Type != null
+                    && v.Type.TypeCode == "SCHEDULE_STATUS");
 
             if (plannedStatus == null)
                 throw new InvalidOperationException("Không tìm thấy trạng thái PLANNED trong hệ thống.");
@@ -121,8 +121,8 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
                 StatusID = plannedStatus.TypeValueID,
                 Title = dto.Title,
                 Description = dto.Description,
-                StartTime = dto.StartTime,
-                EndTime = dto.EndTime,
+                StartTime = dto.StartTime.Value,
+                EndTime = dto.EndTime.Value,
                 CreatedByUserID = dto.CreatedByUserID,
                 AssignedToUserID = dto.AssignedToUserID,
                 CreatedAt = DateTime.Now,
@@ -173,6 +173,17 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
             return await ChangeStatusAsync(id, "CANCELED");
         }
 
+        public async Task<bool> DeleteAsync(long id)
+        {
+            var schedule = await _context.CustomerSchedules.FindAsync(id);
+            if (schedule == null)
+                return false;
+
+            schedule.IsDeleted = true;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
         private async Task<bool> ChangeStatusAsync(long scheduleId, string statusCode)
         {
             var schedule = await _context.CustomerSchedules
@@ -182,8 +193,8 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
 
             var newStatus = await _context.SystemTypeValues
                 .FirstOrDefaultAsync(v => v.ValueCode == statusCode
-                    && v.SystemType != null
-                    && v.SystemType.TypeCode == "SCHEDULE_STATUS");
+                    && v.Type != null
+                    && v.Type.TypeCode == "SCHEDULE_STATUS");
 
             if (newStatus == null) return false;
 
@@ -289,8 +300,8 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
                 .ToListAsync();
 
             var scheduleTypes = await _context.SystemTypeValues
-                .Where(v => v.SystemType != null
-                    && v.SystemType.TypeCode == "SCHEDULE_TYPE"
+                .Where(v => v.Type != null
+                    && v.Type.TypeCode == "SCHEDULE_TYPE"
                     && v.IsActive)
                 .Select(v => new DropdownItem
                 {
@@ -334,6 +345,7 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
                 .Include(s => s.Status)
                 .Include(s => s.CreatedByUser)
                 .Include(s => s.AssignedToUser)
+                .Where(s => !s.IsDeleted)
                 .AsNoTracking();
         }
 

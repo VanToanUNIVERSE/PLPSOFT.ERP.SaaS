@@ -9,6 +9,6 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Dashboard
         public int TotalOverdueSchedules { get; set; }   // Tạm thời để 0 nếu chưa có DB
         
         public List<FeedbackListItemDto> RecentFeedbacks { get; set; } = new();
-        // Sau này thêm danh sách lịch hẹn
+        public List<ScheduleListViewModel> TodaySchedules { get; set; } = new();
     }
 }
