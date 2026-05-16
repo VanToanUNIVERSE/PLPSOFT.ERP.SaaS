@@ -1,6 +1,14 @@
 @model ScheduleDetailViewModel
 @{
     ViewData["Title"] = "Chi tiết lịch chăm sóc";
+    
+    // Tính toán thời gian
+    var now = DateTime.Now;
+    var timeUntilStart = Model.StartTime - now;
+    var timeUntilEnd = Model.EndTime - now;
+    var isInProgress = now >= Model.StartTime && now <= Model.EndTime && Model.StatusCode == "PLANNED";
+    var isStartingSoon = timeUntilStart.TotalMinutes > 0 && timeUntilStart.TotalMinutes <= 30 && Model.StatusCode == "PLANNED";
+    var isEndingSoon = isInProgress && timeUntilEnd.TotalMinutes <= 15;
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -12,6 +20,29 @@
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@* Cảnh báo nhắc hẹn theo thời gian *@
+@if (isEndingSoon)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>⚠️ Sắp hết thời gian!</strong> Lịch này sẽ kết thúc sau <strong>@((int)Math.Ceiling(timeUntilEnd.TotalMinutes))</strong> phút nữa.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+else if (isStartingSoon)
+{
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <strong>⏰ Sắp đến lịch!</strong> Lịch này sẽ bắt đầu sau <strong>@((int)Math.Ceiling(timeUntilStart.TotalMinutes))</strong> phút nữa.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+else if (isInProgress)
+{
+    <div class="alert alert-primary alert-dismissible fade show" role="alert">
+        <strong>🔄 Đang diễn ra!</strong> Lịch này đang trong thời gian thực hiện.
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
@@ -62,6 +93,37 @@
                         <p class="fs-5">@Model.EndTime.ToString("dd/MM/yyyy HH:mm")</p>
                     </div>
                 </div>
+
+                @* Thanh tiến trình thời gian *@
+                @if (Model.StatusCode == "PLANNED")
+                {
+                    <div class="mb-3">
+                        <label class="form-label text-muted fw-bold">📊 Tiến trình thời gian</label>
+                        @{
+                            var totalDuration = (Model.EndTime - Model.StartTime).TotalMinutes;
+                            var elapsed = (now - Model.StartTime).TotalMinutes;
+                            var progressPct = totalDuration > 0 ? Math.Min(100, Math.Max(0, (elapsed / totalDuration) * 100)) : 0;
+                            var progressColor = progressPct < 50 ? "bg-success" : progressPct < 80 ? "bg-warning" : "bg-danger";
+                            var progressStatus = now < Model.StartTime ? "Chưa bắt đầu"
+                                                : now > Model.EndTime ? "Đã quá hạn"
+                                                : $"Đã diễn ra {(int)progressPct}%";
+                        }
+                        <div class="progress" style="height: 24px;">
+                            <div class="progress-bar @progressColor progress-bar-striped @(isInProgress ? "progress-bar-animated" : "")"
+                                 role="progressbar"
+                                 style="width: @((int)progressPct)%"
+                                 aria-valuenow="@((int)progressPct)"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                                @progressStatus
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-1">
+                            <small class="text-muted">@Model.StartTime.ToString("HH:mm")</small>
+                            <small class="text-muted">@Model.EndTime.ToString("HH:mm")</small>
+                        </div>
+                    </div>
+                }
 
                 @if (!string.IsNullOrEmpty(Model.Description))
                 {
@@ -123,18 +185,16 @@
                     <a asp-action="Edit" asp-route-id="@Model.ScheduleID" class="btn btn-warning">
                         ✏️ Chỉnh sửa lịch
                     </a>
-                    <form asp-action="Complete" asp-route-id="@Model.ScheduleID" method="post">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-success w-100" onclick="return confirm('Xác nhận hoàn thành lịch này?')">
-                            ✅ Hoàn thành
-                        </button>
-                    </form>
-                    <form asp-action="Cancel" asp-route-id="@Model.ScheduleID" method="post">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-danger w-100" onclick="return confirm('Xác nhận hủy lịch này?')">
-                            ❌ Hủy lịch
-                        </button>
-                    </form>
+
+                    <!-- Nút Hoàn thành với modal xác nhận -->
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#completeModal">
+                        ✅ Hoàn thành
+                    </button>
+
+                    <!-- Nút Hủy với modal xác nhận -->
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">
+                        ❌ Hủy lịch
+                    </button>
                 }
                 else
                 {
@@ -149,3 +209,72 @@
         </div>
     </div>
 </div>
+
+@* Modal xác nhận Hoàn thành *@
+@if (Model.StatusCode == "PLANNED")
+{
+    <div class="modal fade" id="completeModal" tabindex="-1" aria-labelledby="completeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="completeModalLabel">✅ Xác nhận hoàn thành</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn đánh dấu lịch <strong>"@Model.Title"</strong> là đã <span class="badge bg-success">Hoàn thành</span>?</p>
+                    <div class="alert alert-light border">
+                        <small>
+                            <strong>📋 Thông tin lịch:</strong><br>
+                            👤 Khách hàng: @Model.CustomerName<br>
+                            ⏰ Thời gian: @Model.StartTime.ToString("dd/MM/yyyy HH:mm") - @Model.EndTime.ToString("HH:mm")<br>
+                            👤 Người phụ trách: @Model.AssignedToUserName
+                        </small>
+                    </div>
+                    <p class="text-muted"><small>⚠️ Sau khi hoàn thành, bạn sẽ không thể chỉnh sửa lịch này.</small></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <form asp-action="Complete" asp-route-id="@Model.ScheduleID" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-success">
+                            ✅ Xác nhận hoàn thành
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Modal xác nhận Hủy *@
+    <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="cancelModalLabel">❌ Xác nhận hủy lịch</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn <span class="badge bg-danger">Hủy</span> lịch <strong>"@Model.Title"</strong>?</p>
+                    <div class="alert alert-light border">
+                        <small>
+                            <strong>📋 Thông tin lịch:</strong><br>
+                            👤 Khách hàng: @Model.CustomerName<br>
+                            ⏰ Thời gian: @Model.StartTime.ToString("dd/MM/yyyy HH:mm") - @Model.EndTime.ToString("HH:mm")<br>
+                            👤 Người phụ trách: @Model.AssignedToUserName
+                        </small>
+                    </div>
+                    <p class="text-danger"><small>⚠️ Hành động này không thể hoàn tác!</small></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <form asp-action="Cancel" asp-route-id="@Model.ScheduleID" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger">
+                            ❌ Xác nhận hủy lịch
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}

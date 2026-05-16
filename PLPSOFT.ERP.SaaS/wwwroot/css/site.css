@@ -20,3 +20,124 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/* =============================================
+   HỆ THỐNG NHẮC HẸN - REMINDER SYSTEM
+   ============================================= */
+
+/* Nút chuông nhắc hẹn */
+#btnReminderBell {
+  font-size: 1.25rem;
+  border: none;
+  background: transparent;
+  padding: 0.375rem 0.5rem;
+  transition: transform 0.2s ease;
+}
+
+#btnReminderBell:hover {
+  transform: scale(1.15);
+}
+
+/* Animation chuông rung */
+.bell-ringing {
+  animation: bellRing 0.6s ease-in-out;
+}
+
+@keyframes bellRing {
+  0%   { transform: rotate(0deg); }
+  15%  { transform: rotate(15deg); }
+  30%  { transform: rotate(-15deg); }
+  45%  { transform: rotate(10deg); }
+  60%  { transform: rotate(-10deg); }
+  75%  { transform: rotate(5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Badge đếm nhắc hẹn */
+#reminderBadge {
+  font-size: 0.65rem;
+  padding: 0.25em 0.5em;
+  min-width: 18px;
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50%      { transform: translate(-50%, -50%) scale(1.15); }
+}
+
+/* Dropdown danh sách nhắc hẹn */
+.reminder-dropdown {
+  border: none;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.reminder-dropdown .dropdown-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 0.9rem;
+  padding: 0.75rem 1rem;
+}
+
+/* Item nhắc hẹn trong dropdown */
+.reminder-item {
+  padding: 0.65rem 1rem;
+  border-left: 4px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.reminder-item:hover {
+  background-color: #f0f4ff;
+}
+
+.reminder-starting {
+  border-left-color: #198754;
+}
+
+.reminder-ending {
+  border-left-color: #ffc107;
+}
+
+/* Toast nhắc hẹn */
+.toast-reminder {
+  min-width: 320px;
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  animation: toastSlideIn 0.4s ease-out;
+}
+
+@keyframes toastSlideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.toast-reminder .toast-header {
+  border-bottom: none;
+  padding: 0.65rem 1rem;
+}
+
+.toast-reminder .toast-body {
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Trạng thái badge trong bảng danh sách */
+.status-transition {
+  transition: all 0.3s ease;
+}
+
+.status-transition:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}

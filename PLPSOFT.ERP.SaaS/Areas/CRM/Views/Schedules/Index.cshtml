@@ -100,6 +100,7 @@
                         <th>Loại</th>
                         <th>Người phụ trách</th>
                         <th>Thời gian bắt đầu</th>
+                        <th>Thời gian kết thúc</th>
                         <th>Trạng thái</th>
                         <th style="width: 200px;">Thao tác</th>
                     </tr>
@@ -110,7 +111,20 @@
                         int stt = 1;
                         @foreach (var item in Model)
                         {
-                            <tr class="@(item.IsOverdue ? "table-danger" : "")">
+                            var now = DateTime.Now;
+                            var timeUntilStart = item.StartTime - now;
+                            var timeUntilEnd = item.EndTime - now;
+                            var isStartingSoon = timeUntilStart.TotalMinutes > 0 && timeUntilStart.TotalMinutes <= 30 && item.StatusCode == "PLANNED";
+                            var isInProgress = now >= item.StartTime && now <= item.EndTime && item.StatusCode == "PLANNED";
+                            var isEndingSoon = isInProgress && timeUntilEnd.TotalMinutes <= 15;
+
+                            var rowClass = item.IsOverdue ? "table-danger"
+                                         : isEndingSoon ? "table-warning"
+                                         : isStartingSoon ? "table-info"
+                                         : isInProgress ? "table-light"
+                                         : "";
+
+                            <tr class="@rowClass">
                                 <td>@(stt++)</td>
                                 <td>
                                     <a asp-action="Details" asp-route-id="@item.ScheduleID" class="text-decoration-none fw-bold">
@@ -120,6 +134,18 @@
                                     {
                                         <span class="badge bg-danger ms-1">Quá hạn</span>
                                     }
+                                    @if (isStartingSoon)
+                                    {
+                                        <span class="badge bg-info ms-1">⏰ Sắp bắt đầu</span>
+                                    }
+                                    @if (isEndingSoon)
+                                    {
+                                        <span class="badge bg-warning text-dark ms-1">⚠️ Sắp kết thúc</span>
+                                    }
+                                    @if (isInProgress && !isEndingSoon)
+                                    {
+                                        <span class="badge bg-primary ms-1">🔄 Đang diễn ra</span>
+                                    }
                                 </td>
                                 <td>
                                     <span class="text-muted">@item.CustomerCode</span> - @item.CustomerName
@@ -127,6 +153,7 @@
                                 <td><span class="badge bg-info text-dark">@item.ScheduleTypeName</span></td>
                                 <td>@item.AssignedToUserName</td>
                                 <td>@item.StartTime.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@item.EndTime.ToString("dd/MM/yyyy HH:mm")</td>
                                 <td>
                                     @{
                                         var badgeClass = item.StatusCode switch
@@ -162,7 +189,7 @@
                     else
                     {
                         <tr>
-                            <td colspan="8" class="text-center py-4 text-muted">
+                            <td colspan="9" class="text-center py-4 text-muted">
                                 <h5>📭 Không có lịch chăm sóc nào.</h5>
                                 <a asp-action="Create" class="btn btn-primary mt-2">➕ Tạo lịch mới</a>
                             </td>

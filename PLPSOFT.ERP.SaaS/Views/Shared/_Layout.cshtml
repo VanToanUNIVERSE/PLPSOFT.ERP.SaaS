@@ -38,6 +38,27 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
+
+                    <!-- Nút chuông nhắc hẹn -->
+                    <div class="d-flex align-items-center">
+                        <div class="position-relative" id="reminderBellContainer">
+                            <button class="btn btn-outline-secondary position-relative" id="btnReminderBell" type="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false" title="Nhắc hẹn lịch chăm sóc">
+                                🔔
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" id="reminderBadge">
+                                    0
+                                </span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end reminder-dropdown" id="reminderDropdown" style="min-width: 380px; max-height: 400px; overflow-y: auto;">
+                                <h6 class="dropdown-header">🔔 Nhắc hẹn lịch chăm sóc</h6>
+                                <div id="reminderList">
+                                    <div class="text-center text-muted py-3">
+                                        <small>Đang tải...</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -53,9 +74,14 @@
             &copy; 2026 - PLPSOFT.ERP.SaaS - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
+    <!-- Toast container cho nhắc hẹn -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer" style="z-index: 9999;"></div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/reminders.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

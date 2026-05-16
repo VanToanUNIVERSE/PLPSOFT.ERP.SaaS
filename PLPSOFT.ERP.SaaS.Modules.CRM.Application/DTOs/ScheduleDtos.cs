@@ -129,4 +129,32 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs
         public List<DropdownItem> ScheduleTypes { get; set; } = new();
         public List<DropdownItem> Users { get; set; } = new();
     }
+
+    /// <summary>
+    /// ViewModel cho nhắc hẹn lịch chăm sóc
+    /// </summary>
+    public class ReminderViewModel
+    {
+        public long ScheduleID { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string CustomerName { get; set; } = string.Empty;
+        public string AssignedToUserName { get; set; } = string.Empty;
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
+
+        /// <summary>
+        /// Loại nhắc hẹn: "STARTING" = sắp đến lịch, "ENDING" = sắp hết lịch
+        /// </summary>
+        public string ReminderType { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Thông báo nhắc hẹn (ví dụ: "Còn 15 phút nữa sẽ bắt đầu")
+        /// </summary>
+        public string Message { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Số phút còn lại
+        /// </summary>
+        public int MinutesRemaining { get; set; }
+    }
 }
