@@ -1,0 +1,140 @@
+@model IEnumerable<PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.TimelineItemDto>
+@{
+    ViewData["Title"] = "Hồ sơ 360° Khách hàng - Timeline & Notes";
+    var notes = ViewBag.Notes as List<PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.CustomerNoteDto>;
+}
+
+<style>
+    /* Timeline styling */
+    .timeline-invoice  { border-left: 4px solid #1cc88a !important; }
+    .timeline-feedback { border-left: 4px solid #e74a3b !important; }
+    .timeline-schedule { border-left: 4px solid #4e73df !important; }
+    .timeline-note     { border-left: 4px solid #f6c23e !important; }
+
+    .badge-invoice  { background-color: #1cc88a; color: #fff; }
+    .badge-feedback { background-color: #e74a3b; color: #fff; }
+    .badge-schedule { background-color: #4e73df; color: #fff; }
+    .badge-note     { background-color: #f6c23e; color: #212529; }
+</style>
+
+<div class="container-fluid mt-4">
+    <h4 class="mb-4">
+        <i class="fas fa-user-clock"></i>
+        Hồ sơ 360° Khách hàng (ID: @ViewBag.CustomerID)
+    </h4>
+
+    <div class="row">
+        <!-- CỘT TRÁI: Thêm Ghi chú -->
+        <div class="col-md-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-warning text-dark">
+                    <h6 class="m-0 fw-bold">📝 Thêm Ghi chú (Customer Notes)</h6>
+                </div>
+                <div class="card-body">
+                    <textarea id="txtNoteContent" class="form-control" rows="4"
+                        placeholder="Nhập ghi chú... VD: Khách thích được liên hệ buổi sáng"></textarea>
+                    <button class="btn btn-warning mt-3 w-100" onclick="saveNote()">
+                        💾 Lưu Ghi Chú
+                    </button>
+                </div>
+            </div>
+
+            <!-- Danh sách ghi chú hiện tại -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold text-secondary">📋 Danh sách Ghi chú</h6>
+                </div>
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                    @if (notes == null || !notes.Any())
+                    {
+                        <p class="text-muted">Chưa có ghi chú nào.</p>
+                    }
+                    else
+                    {
+                        @foreach (var note in notes)
+                        {
+                            <div class="border-bottom pb-2 mb-2">
+                                <small class="text-muted">@note.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                                <p class="mb-0">@note.Content</p>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- CỘT PHẢI: Timeline -->
+        <div class="col-md-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-primary text-white">
+                    <h6 class="m-0 fw-bold">⏱️ Lịch sử tương tác (Customer Timeline)</h6>
+                </div>
+                <div class="card-body">
+                    @if (Model == null || !Model.Any())
+                    {
+                        <div class="text-center text-muted py-5">
+                            <p>Chưa có dữ liệu tương tác nào.</p>
+                            <p>Hãy thử thêm một Ghi chú ở bên trái.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model)
+                        {
+                            var badgeClass = item.EventType switch
+                            {
+                                "INVOICE" => "badge-invoice",
+                                "FEEDBACK" => "badge-feedback",
+                                "SCHEDULE" => "badge-schedule",
+                                "NOTE" => "badge-note",
+                                _ => "bg-secondary"
+                            };
+
+                            <div class="card mb-3 @item.CssClass">
+                                <div class="card-body py-2 px-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="badge @badgeClass me-1">@item.EventBadge</span>
+                                            <strong>@item.Title</strong>
+                                        </div>
+                                        <small class="text-muted">@item.EventTime.ToString("dd/MM/yyyy HH:mm")</small>
+                                    </div>
+                                    <p class="mb-0 mt-1 text-secondary">@item.Description</p>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function saveNote() {
+            var content = document.getElementById('txtNoteContent').value;
+            var customerId = @ViewBag.CustomerID;
+
+            if (!content || !content.trim()) {
+                alert('Vui lòng nhập nội dung ghi chú!');
+                return;
+            }
+
+            fetch('@Url.Action("AddNote", "CustomerTimeline", new { area = "CRM" })', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ CustomerID: customerId, Content: content })
+            }).then(function (res) {
+                if (res.ok) {
+                    alert('✅ Thêm ghi chú thành công!');
+                    location.reload();
+                } else {
+                    alert('❌ Có lỗi xảy ra. Vui lòng thử lại.');
+                }
+            }).catch(function () {
+                alert('❌ Không thể kết nối server.');
+            });
+        }
+    </script>
+}
