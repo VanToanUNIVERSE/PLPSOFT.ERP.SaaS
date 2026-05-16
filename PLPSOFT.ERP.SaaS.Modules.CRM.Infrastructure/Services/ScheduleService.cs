@@ -295,6 +295,78 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
 
         #endregion
 
+        #region Nhắc hẹn nâng cao (sắp đến + sắp hết lịch)
+
+        public async Task<List<ReminderViewModel>> GetAllRemindersAsync()
+        {
+            var now = DateTime.Now;
+            var thirtyMinutesLater = now.AddMinutes(30);
+            var fifteenMinutesLater = now.AddMinutes(15);
+            var reminders = new List<ReminderViewModel>();
+
+            // 1. Lịch sắp bắt đầu trong 30 phút tới
+            var startingSoon = await BuildBaseQuery()
+                .Where(s => s.StartTime >= now
+                    && s.StartTime <= thirtyMinutesLater
+                    && s.Status != null
+                    && s.Status.ValueCode == "PLANNED")
+                .Select(s => new ReminderViewModel
+                {
+                    ScheduleID = s.ScheduleID,
+                    Title = s.Title,
+                    CustomerName = s.Customer != null ? s.Customer.CustomerName : "",
+                    AssignedToUserName = s.AssignedToUser != null ? s.AssignedToUser.FullName : "",
+                    StartTime = s.StartTime,
+                    EndTime = s.EndTime,
+                    ReminderType = "STARTING"
+                })
+                .ToListAsync();
+
+            foreach (var item in startingSoon)
+            {
+                item.MinutesRemaining = (int)Math.Ceiling((item.StartTime - now).TotalMinutes);
+                item.Message = item.MinutesRemaining <= 1
+                    ? $"⏰ Lịch \"{item.Title}\" sắp bắt đầu ngay!"
+                    : $"⏰ Còn {item.MinutesRemaining} phút nữa lịch \"{item.Title}\" sẽ bắt đầu";
+            }
+
+            reminders.AddRange(startingSoon);
+
+            // 2. Lịch đang diễn ra và sắp kết thúc trong 15 phút tới
+            var endingSoon = await BuildBaseQuery()
+                .Where(s => s.StartTime <= now
+                    && s.EndTime >= now
+                    && s.EndTime <= fifteenMinutesLater
+                    && s.Status != null
+                    && s.Status.ValueCode == "PLANNED")
+                .Select(s => new ReminderViewModel
+                {
+                    ScheduleID = s.ScheduleID,
+                    Title = s.Title,
+                    CustomerName = s.Customer != null ? s.Customer.CustomerName : "",
+                    AssignedToUserName = s.AssignedToUser != null ? s.AssignedToUser.FullName : "",
+                    StartTime = s.StartTime,
+                    EndTime = s.EndTime,
+                    ReminderType = "ENDING"
+                })
+                .ToListAsync();
+
+            foreach (var item in endingSoon)
+            {
+                item.MinutesRemaining = (int)Math.Ceiling((item.EndTime - now).TotalMinutes);
+                item.Message = item.MinutesRemaining <= 1
+                    ? $"⚠️ Lịch \"{item.Title}\" sắp hết thời gian!"
+                    : $"⚠️ Còn {item.MinutesRemaining} phút nữa lịch \"{item.Title}\" sẽ kết thúc";
+            }
+
+            reminders.AddRange(endingSoon);
+
+            // Sắp xếp: lịch gần nhất lên đầu
+            return reminders.OrderBy(r => r.MinutesRemaining).ToList();
+        }
+
+        #endregion
+
         #region Dữ liệu dropdown cho form
 
         public async Task<ScheduleFormViewModel> GetFormDataAsync(long companyId)

@@ -301,6 +301,17 @@ namespace PLPSOFT.ERP.SaaS.Areas.CRM.Controllers
             return Json(reminders);
         }
 
+        /// <summary>
+        /// GET: /CRM/Schedules/AllReminders
+        /// API trả JSON tất cả nhắc hẹn (sắp bắt đầu + sắp kết thúc)
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> AllReminders()
+        {
+            var reminders = await _scheduleService.GetAllRemindersAsync();
+            return Json(reminders);
+        }
+
         #endregion
     }
 }

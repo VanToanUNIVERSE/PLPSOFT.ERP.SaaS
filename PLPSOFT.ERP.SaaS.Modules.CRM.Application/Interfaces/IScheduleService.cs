@@ -55,6 +55,11 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Application.Interfaces
         Task<List<ScheduleListViewModel>> GetRemindersAsync();
 
         /// <summary>
+        /// Lấy tất cả nhắc hẹn (sắp bắt đầu + sắp kết thúc)
+        /// </summary>
+        Task<List<ReminderViewModel>> GetAllRemindersAsync();
+
+        /// <summary>
         /// Lấy dữ liệu dropdown cho form tạo/sửa
         /// </summary>
         Task<ScheduleFormViewModel> GetFormDataAsync(long companyId);

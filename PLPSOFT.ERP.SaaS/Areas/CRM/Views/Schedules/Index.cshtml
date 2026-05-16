@@ -83,22 +83,22 @@
                                     <td>@item.AssignedToUserName</td>
                                     <td><span class="badge bg-primary">@item.StatusName</span></td>
                                     <td class="text-center">
-                                        <div class="btn-group" role="group">
-                                            <a href="@Url.Action("Details", "Schedules", new { id = item.ScheduleID })" class="btn btn-sm btn-info text-white" title="Xem chi tiết">
+                                        <div class="" role="group">
+                                            <a href="@Url.Action("Details", "Schedules", new { id = item.ScheduleID })" class="btn btn-sm btn-info text-white me-2" title="Xem chi tiết">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a href="@Url.Action("Edit", "Schedules", new { id = item.ScheduleID })" class="btn btn-sm btn-warning text-white" title="Sửa">
+                                            <a href="@Url.Action("Edit", "Schedules", new { id = item.ScheduleID })" class="btn btn-sm btn-warning text-white me-2" title="Sửa">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <form asp-action="Complete" asp-route-id="@item.ScheduleID" method="post" style="display:inline" onsubmit="return confirm('Xác nhận đánh dấu hoàn thành lịch hẹn này?')">
                                                 @Html.AntiForgeryToken()
-                                                <button type="submit" class="btn btn-sm btn-success text-white" title="Hoàn thành">
+                                                <button type="submit" class="btn btn-sm btn-success text-white me-2" title="Hoàn thành">
                                                     <i class="fas fa-check"></i>
                                                 </button>
                                             </form>
                                             <form asp-action="Delete" asp-route-id="@item.ScheduleID" method="post" style="display:inline" onsubmit="return confirm('Xác nhận xóa lịch hẹn này?')">
                                                 @Html.AntiForgeryToken()
-                                                <button type="submit" class="btn btn-sm btn-danger text-white" title="Xóa">
+                                                <button type="submit" class="btn btn-sm btn-danger text-white me-2" title="Xóa">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </form>
