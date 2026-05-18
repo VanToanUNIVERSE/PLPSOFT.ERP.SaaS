@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CRM Demo</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #6c83f7;
+            --primary-dark: #3249d3;
+            --success: #06d6a0;
+            --warning: #ffd166;
+            --danger: #ef476f;
+            --info: #118ab2;
+            --dark: #1a1a2e;
+            --sidebar-bg: #16213e;
+            --sidebar-text: #e0e0e0;
+            --body-bg: #f0f2f5;
+            --card-bg: #ffffff;
+        }
+
+        * { font-family: 'Inter', sans-serif; }
+
+        body {
+            background: var(--body-bg);
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 260px;
+            height: 100vh;
+            background: linear-gradient(180deg, var(--sidebar-bg) 0%, var(--dark) 100%);
+            padding: 0;
+            z-index: 1000;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-brand {
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .sidebar-brand .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .sidebar-brand h5 {
+            color: white;
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .sidebar-brand small {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.7rem;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .sidebar-nav .nav-section {
+            padding: 0.5rem 1.5rem;
+            color: rgba(255,255,255,0.35);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .sidebar-nav .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 1.5rem;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            font-size: 0.875rem;
+        }
+
+        .sidebar-nav .nav-link:hover {
+            background: rgba(255,255,255,0.05);
+            color: white;
+        }
+
+        .sidebar-nav .nav-link.active {
+            background: rgba(67,97,238,0.15);
+            color: var(--primary-light);
+            border-left-color: var(--primary);
+        }
+
+        .sidebar-nav .nav-link i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main content */
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        /* Top bar */
+        .topbar {
+            background: white;
+            padding: 0.75rem 2rem;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar h4 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--dark);
+        }
+
+        .page-content {
+            padding: 1.5rem 2rem;
+        }
+
+        /* Cards */
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.25rem;
+            border: none;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .stat-card .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .stat-card .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin: 0;
+        }
+
+        /* Footer */
+        .app-footer {
+            margin-left: 260px;
+            padding: 1rem 2rem;
+            text-align: center;
+            color: #adb5bd;
+            font-size: 0.8rem;
+            border-top: 1px solid #e9ecef;
+        }
+
+        @@media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .main-content { margin-left: 0; }
+            .app-footer { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <div class="logo-icon">
+                <i class="bi bi-building"></i>
+            </div>
+            <div>
+                <h5>PLPSOFT CRM</h5>
+                <small>ERP SaaS v2026</small>
+            </div>
+        </div>
+        <div class="sidebar-nav">
+            <div class="nav-section">Quản lý khách hàng</div>
+            <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" 
+               asp-controller="CustomerTimeline" asp-action="Index">
+                <i class="bi bi-clock-history"></i>
+                Timeline 360°
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Notes" ? "active" : "")" 
+               asp-controller="CustomerTimeline" asp-action="Notes">
+                <i class="bi bi-journal-text"></i>
+                Ghi chú khách hàng
+            </a>
+
+            <div class="nav-section mt-3">Tổng quan</div>
+            <a class="nav-link" asp-controller="Home" asp-action="Index">
+                <i class="bi bi-house"></i>
+                Trang chủ
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="topbar">
+            <h4><i class="bi bi-grid me-2"></i>@ViewData["Title"]</h4>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-success-subtle text-success px-3 py-2">
+                    <i class="bi bi-circle-fill me-1" style="font-size:0.5rem;"></i> Online
+                </span>
+                <div class="d-flex align-items-center gap-2 ms-2">
+                    <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-light));display:flex;align-items:center;justify-content:center;color:white;font-size:0.8rem;font-weight:600;">
+                        A
+                    </div>
+                    <small class="text-muted">Admin</small>
+                </div>
+            </div>
+        </div>
+        <div class="page-content">
+            @RenderBody()
+        </div>
+    </div>
+
+    <footer class="app-footer">
+        &copy; 2026 PLPSOFT ERP SaaS - Customer Relationship Management Module
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

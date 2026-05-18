@@ -4,9 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PLPSOFT.ERP.SaaS.Modules.CRM.Domain.Entities
 {
-    /// <summary>
-    /// Bảng crm.CustomerNotes - Ghi chú khách hàng (Bảng phụ trách chính)
-    /// </summary>
     [Table("CustomerNotes", Schema = "crm")]
     public class CustomerNote
     {
@@ -18,7 +15,7 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Domain.Entities
         public long CustomerID { get; set; }
 
         [Required]
-        public string Content { get; set; } = string.Empty;
+        public string Content { get; set; }
 
         [Required]
         public long CreatedByUserID { get; set; }

@@ -1,0 +1,542 @@
+@model IEnumerable<DemoApp.Models.TimelineItemDto>
+@{
+    ViewData["Title"] = "Timeline Khách Hàng 360°";
+    var customers = ViewBag.Customers as List<DemoApp.Models.CustomerSummaryDto>;
+    var summary = ViewBag.Summary as DemoApp.Models.CustomerSummaryDto;
+    var currentId = (long)ViewBag.CustomerID;
+}
+
+<style>
+    /* Customer selector */
+    .customer-selector {
+        background: white;
+        border-radius: 12px;
+        padding: 1.25rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        margin-bottom: 1.5rem;
+    }
+
+    .customer-selector select {
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        transition: border-color 0.2s;
+    }
+
+    .customer-selector select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(67,97,238,0.15);
+    }
+
+    /* Customer info card */
+    .customer-info {
+        background: linear-gradient(135deg, var(--primary) 0%, #7209b7 100%);
+        border-radius: 16px;
+        padding: 1.5rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .customer-info::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 300px;
+        height: 300px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 50%;
+    }
+
+    .customer-info .avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        background: rgba(255,255,255,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+        backdrop-filter: blur(10px);
+    }
+
+    .customer-info h5 {
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+    }
+
+    .customer-info .info-item {
+        font-size: 0.8rem;
+        opacity: 0.85;
+    }
+
+    .customer-info .info-item i {
+        width: 16px;
+        text-align: center;
+    }
+
+    /* Filter buttons */
+    .filter-group {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-btn {
+        border: 2px solid #e9ecef;
+        background: white;
+        border-radius: 20px;
+        padding: 0.4rem 1rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .filter-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .filter-btn.active {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: white;
+    }
+
+    .filter-btn .count {
+        background: rgba(0,0,0,0.1);
+        border-radius: 10px;
+        padding: 0 0.4rem;
+        font-size: 0.7rem;
+    }
+
+    .filter-btn.active .count {
+        background: rgba(255,255,255,0.25);
+    }
+
+    /* Timeline */
+    .timeline-container {
+        position: relative;
+        padding-left: 2rem;
+    }
+
+    .timeline-container::before {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: linear-gradient(to bottom, var(--primary), #e9ecef);
+    }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 1rem;
+        animation: fadeInUp 0.4s ease forwards;
+        opacity: 0;
+    }
+
+    .timeline-item:nth-child(1) { animation-delay: 0.05s; }
+    .timeline-item:nth-child(2) { animation-delay: 0.1s; }
+    .timeline-item:nth-child(3) { animation-delay: 0.15s; }
+    .timeline-item:nth-child(4) { animation-delay: 0.2s; }
+    .timeline-item:nth-child(5) { animation-delay: 0.25s; }
+    .timeline-item:nth-child(6) { animation-delay: 0.3s; }
+    .timeline-item:nth-child(7) { animation-delay: 0.35s; }
+    .timeline-item:nth-child(8) { animation-delay: 0.4s; }
+
+    @@keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .timeline-dot {
+        position: absolute;
+        left: -2rem;
+        top: 1.2rem;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 3px solid white;
+        box-shadow: 0 0 0 2px var(--primary);
+        z-index: 2;
+    }
+
+    .timeline-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.25rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        border-left: 4px solid transparent;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .timeline-card:hover {
+        transform: translateX(4px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .timeline-invoice .timeline-card { border-left-color: var(--success); }
+    .timeline-invoice .timeline-dot { background: var(--success); box-shadow: 0 0 0 2px var(--success); }
+
+    .timeline-feedback .timeline-card { border-left-color: var(--danger); }
+    .timeline-feedback .timeline-dot { background: var(--danger); box-shadow: 0 0 0 2px var(--danger); }
+
+    .timeline-schedule .timeline-card { border-left-color: var(--info); }
+    .timeline-schedule .timeline-dot { background: var(--info); box-shadow: 0 0 0 2px var(--info); }
+
+    .timeline-note .timeline-card { border-left-color: var(--warning); }
+    .timeline-note .timeline-dot { background: var(--warning); box-shadow: 0 0 0 2px var(--warning); }
+
+    .timeline-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.2rem 0.6rem;
+        border-radius: 6px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .badge-invoice { background: rgba(6,214,160,0.12); color: #059669; }
+    .badge-feedback { background: rgba(239,71,111,0.12); color: #dc2626; }
+    .badge-schedule { background: rgba(17,138,178,0.12); color: #0369a1; }
+    .badge-note { background: rgba(255,209,102,0.15); color: #b45309; }
+
+    .status-badge {
+        font-size: 0.7rem;
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+        font-weight: 500;
+    }
+
+    /* Add note panel */
+    .add-note-panel {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        overflow: hidden;
+    }
+
+    .add-note-panel .panel-header {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        padding: 1rem 1.25rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .add-note-panel .panel-body {
+        padding: 1.25rem;
+    }
+
+    .add-note-panel textarea {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        resize: vertical;
+        transition: border-color 0.2s;
+        font-size: 0.9rem;
+    }
+
+    .add-note-panel textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(67,97,238,0.12);
+    }
+
+    .btn-save-note {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        border: none;
+        border-radius: 8px;
+        padding: 0.6rem 1.5rem;
+        color: white;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-save-note:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(67,97,238,0.35);
+        color: white;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: #dee2e6;
+        margin-bottom: 1rem;
+    }
+
+    /* Toast notification */
+    .toast-container {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 9999;
+    }
+</style>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Chọn khách hàng -->
+<div class="customer-selector">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-3">
+            <label class="fw-semibold text-muted mb-0" style="font-size:0.85rem;">
+                <i class="bi bi-person-badge me-1"></i> Chọn khách hàng:
+            </label>
+            <select id="customerSelect" class="form-select" style="width:auto;min-width:300px;" onchange="switchCustomer(this.value)">
+                @if (customers != null)
+                {
+                    @foreach (var c in customers)
+                    {
+                        if (c.CustomerID == currentId)
+                        {
+                            <option value="@c.CustomerID" selected>@c.CustomerName (ID: @c.CustomerID)</option>
+                        }
+                        else
+                        {
+                            <option value="@c.CustomerID">@c.CustomerName (ID: @c.CustomerID)</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+        <a asp-action="Notes" asp-route-id="@currentId" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-journal-text me-1"></i> Xem tất cả ghi chú
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Cột trái -->
+    <div class="col-lg-4">
+        <!-- Thông tin khách hàng -->
+        @if (summary != null)
+        {
+            <div class="customer-info mb-4">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="avatar">@summary.CustomerName.Substring(0, 1)</div>
+                    <div>
+                        <h5>@summary.CustomerName</h5>
+                        <div class="info-item"><i class="bi bi-telephone me-1"></i> @summary.Phone</div>
+                    </div>
+                </div>
+                <div class="info-item mb-1"><i class="bi bi-envelope me-1"></i> @summary.Email</div>
+                <hr style="border-color:rgba(255,255,255,0.15);" />
+                <div class="row text-center g-2">
+                    <div class="col-3">
+                        <div style="font-size:1.3rem;font-weight:700;">@summary.TotalNotes</div>
+                        <div style="font-size:0.65rem;opacity:0.7;">Ghi chú</div>
+                    </div>
+                    <div class="col-3">
+                        <div style="font-size:1.3rem;font-weight:700;">@summary.TotalFeedbacks</div>
+                        <div style="font-size:0.65rem;opacity:0.7;">Phản hồi</div>
+                    </div>
+                    <div class="col-3">
+                        <div style="font-size:1.3rem;font-weight:700;">@summary.TotalSchedules</div>
+                        <div style="font-size:0.65rem;opacity:0.7;">Lịch hẹn</div>
+                    </div>
+                    <div class="col-3">
+                        <div style="font-size:1.3rem;font-weight:700;">@summary.TotalInvoices</div>
+                        <div style="font-size:0.65rem;opacity:0.7;">Hóa đơn</div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Thêm ghi chú -->
+        <div class="add-note-panel">
+            <div class="panel-header">
+                <i class="bi bi-plus-circle text-primary"></i> Thêm Ghi Chú Mới
+            </div>
+            <div class="panel-body">
+                <textarea id="txtNoteContent" class="form-control mb-3" rows="4" placeholder="Nhập nội dung ghi chú cho khách hàng..."></textarea>
+                <button class="btn btn-save-note w-100" onclick="saveNote()" id="btnSaveNote">
+                    <i class="bi bi-send"></i> Lưu Ghi Chú
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cột phải - Timeline -->
+    <div class="col-lg-8">
+        <!-- Bộ lọc -->
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h6 class="fw-bold text-dark mb-0">
+                <i class="bi bi-clock-history me-1 text-primary"></i>Lịch sử tương tác
+            </h6>
+            <div class="filter-group">
+                <button class="filter-btn active" data-filter="ALL" onclick="filterTimeline('ALL', this)">
+                    <i class="bi bi-grid-3x3-gap"></i> Tất cả
+                    <span class="count">@Model.Count()</span>
+                </button>
+                <button class="filter-btn" data-filter="INVOICE" onclick="filterTimeline('INVOICE', this)">
+                    <i class="bi bi-receipt"></i> Hóa đơn
+                    <span class="count">@Model.Count(x => x.EventType == "INVOICE")</span>
+                </button>
+                <button class="filter-btn" data-filter="FEEDBACK" onclick="filterTimeline('FEEDBACK', this)">
+                    <i class="bi bi-chat-left-dots"></i> Phản hồi
+                    <span class="count">@Model.Count(x => x.EventType == "FEEDBACK")</span>
+                </button>
+                <button class="filter-btn" data-filter="SCHEDULE" onclick="filterTimeline('SCHEDULE', this)">
+                    <i class="bi bi-calendar-event"></i> Lịch hẹn
+                    <span class="count">@Model.Count(x => x.EventType == "SCHEDULE")</span>
+                </button>
+                <button class="filter-btn" data-filter="NOTE" onclick="filterTimeline('NOTE', this)">
+                    <i class="bi bi-sticky"></i> Ghi chú
+                    <span class="count">@Model.Count(x => x.EventType == "NOTE")</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Timeline list -->
+        <div class="timeline-container" id="timelineContainer">
+            @if (!Model.Any())
+            {
+                <div class="empty-state">
+                    <i class="bi bi-inbox d-block"></i>
+                    <h6 class="text-muted">Chưa có dữ liệu tương tác</h6>
+                    <p class="text-muted small">Hãy thêm ghi chú đầu tiên cho khách hàng này</p>
+                </div>
+            }
+            @foreach (var item in Model)
+            {
+                var badgeClass = item.EventType switch
+                {
+                    "INVOICE" => "badge-invoice",
+                    "FEEDBACK" => "badge-feedback",
+                    "SCHEDULE" => "badge-schedule",
+                    "NOTE" => "badge-note",
+                    _ => "badge-note"
+                };
+
+                var statusClass = item.StatusBadge switch
+                {
+                    "Đã xử lý" or "Hoàn thành" => "bg-success-subtle text-success",
+                    "Đang xử lý" => "bg-warning-subtle text-warning",
+                    "Mới" or "Chờ" => "bg-info-subtle text-info",
+                    "Hủy" => "bg-danger-subtle text-danger",
+                    _ => ""
+                };
+
+                <div class="timeline-item @item.CssClass" data-type="@item.EventType">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="d-flex align-items-start justify-content-between mb-2">
+                            <div>
+                                <span class="timeline-badge @badgeClass">
+                                    <i class="bi @item.IconClass"></i> @item.EventBadge
+                                </span>
+                                @if (!string.IsNullOrEmpty(item.StatusBadge))
+                                {
+                                    <span class="status-badge @statusClass ms-1">@item.StatusBadge</span>
+                                }
+                            </div>
+                            <small class="text-muted" style="font-size:0.75rem;">
+                                <i class="bi bi-clock me-1"></i>@item.EventTime.ToString("dd/MM/yyyy HH:mm")
+                            </small>
+                        </div>
+                        <h6 class="fw-semibold mb-1" style="font-size:0.9rem;">@item.Title</h6>
+                        <p class="text-muted mb-0" style="font-size:0.85rem;">@item.Description</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function switchCustomer(id) {
+            window.location.href = '/CustomerTimeline/Index/' + id;
+        }
+
+        function filterTimeline(type, btn) {
+            // Update active state
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Filter items
+            var items = document.querySelectorAll('.timeline-item');
+            items.forEach(function (item) {
+                if (type === 'ALL' || item.getAttribute('data-type') === type) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Show empty state if all hidden
+            var visibleItems = document.querySelectorAll('.timeline-item[style="display: block"], .timeline-item:not([style*="display: none"])');
+        }
+
+        function saveNote() {
+            var content = document.getElementById('txtNoteContent').value.trim();
+            var customerId = @currentId;
+
+            if (!content) {
+                showToast('Vui lòng nhập nội dung ghi chú', 'warning');
+                return;
+            }
+
+            var btn = document.getElementById('btnSaveNote');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Đang lưu...';
+
+            fetch('/CustomerTimeline/AddNote', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ CustomerID: customerId, Content: content })
+            }).then(res => {
+                if (res.ok) {
+                    showToast('Thêm ghi chú thành công!', 'success');
+                    setTimeout(() => location.reload(), 800);
+                } else {
+                    showToast('Có lỗi xảy ra!', 'danger');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-send"></i> Lưu Ghi Chú';
+                }
+            }).catch(() => {
+                showToast('Lỗi kết nối!', 'danger');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-send"></i> Lưu Ghi Chú';
+            });
+        }
+
+        function showToast(message, type) {
+            var container = document.getElementById('toastContainer');
+            var icons = { success: 'bi-check-circle-fill', danger: 'bi-exclamation-circle-fill', warning: 'bi-exclamation-triangle-fill' };
+            var toast = document.createElement('div');
+            toast.className = 'toast show align-items-center text-bg-' + type + ' border-0';
+            toast.setAttribute('role', 'alert');
+            toast.innerHTML =
+                '<div class="d-flex">' +
+                '<div class="toast-body"><i class="bi ' + (icons[type] || 'bi-info-circle') + ' me-2"></i>' + message + '</div>' +
+                '<button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="this.closest(\'.toast\').remove()"></button>' +
+                '</div>';
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+}

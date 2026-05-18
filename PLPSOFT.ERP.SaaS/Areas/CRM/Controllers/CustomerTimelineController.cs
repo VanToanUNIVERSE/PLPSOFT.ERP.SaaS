@@ -3,12 +3,8 @@ using System.Threading.Tasks;
 using PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs;
 using PLPSOFT.ERP.SaaS.Modules.CRM.Application.Interfaces;
 
-namespace PLPSOFT.ERP.SaaS.Areas.CRM.Controllers
+namespace PLPSOFT.ERP.SaaS.Web.Areas.CRM.Controllers
 {
-    /// <summary>
-    /// Controller xử lý Customer Timeline & Notes
-    /// URL: /CRM/CustomerTimeline/Index/{customerId}
-    /// </summary>
     [Area("CRM")]
     public class CustomerTimelineController : Controller
     {
@@ -19,38 +15,25 @@ namespace PLPSOFT.ERP.SaaS.Areas.CRM.Controllers
             _timelineService = timelineService;
         }
 
-        /// <summary>
-        /// Hiển thị Timeline 360 độ + Ghi chú của khách hàng
-        /// GET: /CRM/CustomerTimeline/Index/1
-        /// </summary>
-        public async Task<IActionResult> Index(long id = 1)
+        // GET: /CRM/CustomerTimeline/Index/5
+        public async Task<IActionResult> Index(long id)
         {
             ViewBag.CustomerID = id;
-
             var timeline = await _timelineService.GetTimelineAsync(id);
-            var notes = await _timelineService.GetNotesByCustomerAsync(id);
-
-            ViewBag.Notes = notes;
             return View(timeline);
         }
 
-        /// <summary>
-        /// Thêm ghi chú mới cho khách hàng
-        /// POST: /CRM/CustomerTimeline/AddNote
-        /// </summary>
         [HttpPost]
         public async Task<IActionResult> AddNote([FromBody] CustomerNoteDto model)
         {
             if (string.IsNullOrWhiteSpace(model.Content))
             {
-                return BadRequest("Nội dung ghi chú không được để trống.");
+                return BadRequest("Nội dung không được để trống");
             }
 
-            // TODO: Khi có hệ thống Auth, lấy UserID từ User.Identity
-            model.CreatedByUserID = 1;
-
-            var noteId = await _timelineService.CreateNoteAsync(model);
-            return Ok(new { NoteID = noteId, Message = "Thêm ghi chú thành công." });
+            model.CreatedByUserID = 1; // Fix cứng User tạm thời
+            await _timelineService.CreateNoteAsync(model);
+            return Ok();
         }
     }
 }
