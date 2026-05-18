@@ -3,7 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PLPSOFT.ERP.SaaS.Modules.CRM.Domain.Entities
 {
-    [Table("crm_CustomerSchedules")]
+    // [Table("crm_CustomerSchedules")]
+    [Table("CustomerSchedules", Schema = "crm")]
     public class CustomerSchedule
     {
         [Key]
