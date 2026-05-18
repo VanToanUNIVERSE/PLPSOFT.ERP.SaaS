@@ -1,0 +1,89 @@
+@model IEnumerable<PLPSOFT.ERP.SaaS.Modules.CRM.Domain.Entities.Customer>
+@{
+    ViewData["Title"] = "Danh sách Khách hàng - Hồ sơ 360°";
+}
+
+<div class="container-fluid mt-4">
+    <h4 class="mb-4 text-dark fw-bold">
+        <i class="fas fa-users text-primary me-2"></i>
+        Danh sách Khách hàng
+    </h4>
+
+    <!-- THANH LỌC TÌM KIẾM -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body bg-white py-3">
+            <form method="get" action="@Url.Action("Index", "CustomerTimeline", new { area = "CRM" })">
+                <div class="row align-items-end">
+                    <div class="col-md-9 col-12">
+                        <label class="form-label small fw-bold text-secondary mb-1">Tìm kiếm theo tên khách hàng:</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0">
+                                <i class="fas fa-search text-muted"></i>
+                            </span>
+                            <input type="text" name="searchName" value="@ViewBag.SearchName" 
+                                   class="form-control border-start-0 shadow-none ps-0" 
+                                   placeholder="Nhập tên khách hàng cần tìm kiếm..." />
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-12 mt-3 mt-md-0">
+                        <button type="submit" class="btn btn-secondary w-100 fw-bold py-2 shadow-sm">
+                            <i class="fas fa-filter me-1"></i> Lọc danh sách
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- BẢNG DANH SÁCH KHÁCH HÀNG -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header py-3 bg-light border-bottom">
+            <h6 class="m-0 fw-bold text-success"><i class="fas fa-list me-1"></i> Danh sách chi tiết</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3" style="width: 15%">Mã khách hàng</th>
+                            <th style="width: 25%">Tên khách hàng</th>
+                            <th style="width: 20%">Số điện thoại</th>
+                            <th style="width: 25%">Email</th>
+                            <th class="text-center" style="width: 15%">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model == null || !Model.Any())
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">
+                                    <i class="fas fa-info-circle me-1"></i> Không tìm thấy khách hàng nào.
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="ps-3 fw-bold text-secondary">@item.CustomerCode</td>
+                                    <td class="fw-bold text-dark">@item.CustomerName</td>
+                                    <td>@(string.IsNullOrWhiteSpace(item.Phone) ? "—" : item.Phone)</td>
+                                    <td>@(string.IsNullOrWhiteSpace(item.Email) ? "—" : item.Email)</td>
+                                    <td class="text-center">
+                                        <!-- Nút con mắt màu xanh dương tròn giống hệt demo -->
+                                        <a href="@Url.Action("Details", "CustomerTimeline", new { area = "CRM", id = item.CustomerID })" 
+                                           class="btn btn-sm btn-info text-white rounded-circle shadow-sm" 
+                                           title="Xem Hồ sơ 360°" style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-eye small"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

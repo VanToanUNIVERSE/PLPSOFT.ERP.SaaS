@@ -12,6 +12,7 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Persistence
         // ===== CRM Schema =====
         public DbSet<CustomerFeedback> CustomerFeedbacks { get; set; }
         public DbSet<CustomerSchedule> CustomerSchedules { get; set; }
+        public DbSet<CustomerNote> CustomerNotes { get; set; }
 
         // ===== Shared / dbo Schema =====
         public DbSet<Company> Companies { get; set; }
@@ -155,6 +156,14 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Persistence
                  .WithMany()
                  .HasForeignKey(x => x.AssignedToUserID)
                  .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<CustomerNote>(e =>
+            {
+                e.ToTable("CustomerNotes", "crm");
+                e.HasKey(x => x.NoteID);
+                e.Property(x => x.Content).IsRequired();
+                e.Property(x => x.CreatedAt).HasDefaultValueSql("sysdatetime()");
             });
         }
     }

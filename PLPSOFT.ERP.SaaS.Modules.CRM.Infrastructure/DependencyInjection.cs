@@ -21,6 +21,7 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure
             // Đăng ký Services
             services.AddScoped<IFeedbackService, FeedbackService>();
             services.AddScoped<IScheduleService, ScheduleService>();
+            services.AddScoped<ICustomerTimelineService, CustomerTimelineService>();
 
             return services;
         }
