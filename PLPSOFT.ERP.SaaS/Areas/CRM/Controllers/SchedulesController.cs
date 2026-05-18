@@ -264,12 +264,11 @@ namespace PLPSOFT.ERP.SaaS.Areas.CRM.Controllers
         /// Hiển thị danh sách lịch quá hạn
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> Overdue()
+        public IActionResult Overdue()
         {
-            var schedules = await _scheduleService.GetOverdueAsync();
-            return View("Index", schedules);
-        }
-
+            return RedirectToAction(nameof(Index), new { timeFilter = "overdue" });
+        }   
+    
         #endregion
 
         #region Lọc lịch sắp tới
@@ -279,11 +278,10 @@ namespace PLPSOFT.ERP.SaaS.Areas.CRM.Controllers
         /// Hiển thị danh sách lịch sắp tới (trong ngày hoặc trong tuần)
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> Upcoming(bool thisWeek = false)
+        public IActionResult Upcoming(bool thisWeek = false)
         {
-            var schedules = await _scheduleService.GetUpcomingAsync(thisWeek);
-            ViewBag.ThisWeek = thisWeek;
-            return View("Index", schedules);
+            string timeFilter = thisWeek ? "upcoming_week" : "upcoming_day";
+            return RedirectToAction(nameof(Index), new { timeFilter = timeFilter });
         }
 
         #endregion
