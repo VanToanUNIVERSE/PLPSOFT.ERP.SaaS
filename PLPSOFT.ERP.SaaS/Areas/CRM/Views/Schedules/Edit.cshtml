@@ -19,13 +19,7 @@
                 <input type="hidden" asp-for="UpdateDto.ScheduleID" />
                 <input type="hidden" asp-for="UpdateDto.BranchID" />
 
-                @if (!ViewData.ModelState.IsValid)
-                {
-                    <div class="alert alert-danger shadow-sm">
-                        <i class="fas fa-exclamation-triangle me-2"></i> Có lỗi xảy ra, vui lòng kiểm tra lại thông tin!
-                        <div asp-validation-summary="All" class="text-danger mt-2 mb-0"></div>
-                    </div>
-                }
+
 
                 <div class="row mb-3">
                     <div class="col-md-12">
@@ -87,3 +81,62 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        $(document).ready(function () {
+            $('form').on('submit', function (e) {
+                var customer = $('#UpdateDto_CustomerID').val();
+                var type = $('#UpdateDto_ScheduleTypeID').val();
+                var title = $('#UpdateDto_Title').val();
+                var startTime = $('#UpdateDto_StartTime').val();
+                var endTime = $('#UpdateDto_EndTime').val();
+                var assignedTo = $('#UpdateDto_AssignedToUserID').val();
+                
+                // Check if ALL fields are empty/unfilled
+                if (!customer && !type && (!title || !title.trim()) && !startTime && !endTime && !assignedTo) {
+                    e.preventDefault();
+                    
+                    // Show a beautiful error toast
+                    showValidationToast("Bạn chưa nhập dữ liệu nào. Vui lòng điền thông tin lịch hẹn trước khi lưu!");
+                    
+                    // Focus on the first field
+                    $('#UpdateDto_CustomerID').focus();
+                    return false;
+                }
+            });
+
+            function showValidationToast(message) {
+                var container = $('#toastContainer');
+                if (!container.length) {
+                    $('body').append('<div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100"></div>');
+                    container = $('#toastContainer');
+                }
+
+                var toastId = 'toast_val_' + Date.now();
+                var toastHtml = `
+                    <div id="${toastId}" class="toast align-items-center text-white bg-danger border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+                        <div class="d-flex">
+                            <div class="toast-body d-flex align-items-center">
+                                <i class="fas fa-triangle-exclamation fs-5 me-2"></i>
+                                <div class="fw-bold">${message}</div>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `;
+
+                container.append(toastHtml);
+                var toastEl = document.getElementById(toastId);
+                var toast = new bootstrap.Toast(toastEl);
+                toast.show();
+
+                toastEl.addEventListener('hidden.bs.toast', function () {
+                    toastEl.remove();
+                });
+            }
+        });
+    </script>
+}

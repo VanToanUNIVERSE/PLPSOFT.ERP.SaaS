@@ -134,15 +134,15 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
             {
                 CompanyID = dto.CompanyID,
                 BranchID = dto.BranchID,
-                CustomerID = dto.CustomerID,
-                ScheduleTypeID = dto.ScheduleTypeID,
+                CustomerID = dto.CustomerID.GetValueOrDefault(),
+                ScheduleTypeID = dto.ScheduleTypeID.GetValueOrDefault(),
                 StatusID = plannedStatus.TypeValueID,
                 Title = dto.Title,
                 Description = dto.Description,
-                StartTime = dto.StartTime.Value,
-                EndTime = dto.EndTime.Value,
+                StartTime = dto.StartTime.GetValueOrDefault(),
+                EndTime = dto.EndTime.GetValueOrDefault(),
                 CreatedByUserID = dto.CreatedByUserID,
-                AssignedToUserID = dto.AssignedToUserID,
+                AssignedToUserID = dto.AssignedToUserID.GetValueOrDefault(),
                 CreatedAt = DateTime.Now,
                 IsDeleted = false
             };
@@ -164,14 +164,14 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
 
             if (schedule == null) return false;
 
-            schedule.CustomerID = dto.CustomerID;
+            schedule.CustomerID = dto.CustomerID.GetValueOrDefault();
             schedule.BranchID = dto.BranchID;
-            schedule.ScheduleTypeID = dto.ScheduleTypeID;
+            schedule.ScheduleTypeID = dto.ScheduleTypeID.GetValueOrDefault();
             schedule.Title = dto.Title;
             schedule.Description = dto.Description;
-            schedule.StartTime = dto.StartTime;
-            schedule.EndTime = dto.EndTime;
-            schedule.AssignedToUserID = dto.AssignedToUserID;
+            schedule.StartTime = dto.StartTime.GetValueOrDefault();
+            schedule.EndTime = dto.EndTime.GetValueOrDefault();
+            schedule.AssignedToUserID = dto.AssignedToUserID.GetValueOrDefault();
 
             await _context.SaveChangesAsync();
             return true;

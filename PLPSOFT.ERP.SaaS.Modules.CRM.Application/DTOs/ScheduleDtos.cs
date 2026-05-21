@@ -68,8 +68,11 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs
     {
         public long CompanyID { get; set; }
         public long BranchID { get; set; }
-        public long CustomerID { get; set; }
-        public long ScheduleTypeID { get; set; }
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Vui lòng chọn khách hàng.")]
+        public long? CustomerID { get; set; }
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Vui lòng chọn loại lịch.")]
+        public long? ScheduleTypeID { get; set; }
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Vui lòng nhập tiêu đề công việc.")]
         public string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
         [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Vui lòng chọn thời gian bắt đầu.")]
@@ -77,7 +80,8 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs
         [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Vui lòng chọn thời gian kết thúc.")]
         public DateTime? EndTime { get; set; }
         public long CreatedByUserID { get; set; }
-        public long AssignedToUserID { get; set; }
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Vui lòng chọn người phụ trách.")]
+        public long? AssignedToUserID { get; set; }
     }
 
     /// <summary>
@@ -86,14 +90,20 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs
     public class UpdateScheduleDto
     {
         public long ScheduleID { get; set; }
-        public long CustomerID { get; set; }
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Vui lòng chọn khách hàng.")]
+        public long? CustomerID { get; set; }
         public long BranchID { get; set; }
-        public long ScheduleTypeID { get; set; }
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Vui lòng chọn loại lịch.")]
+        public long? ScheduleTypeID { get; set; }
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Vui lòng nhập tiêu đề công việc.")]
         public string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
-        public long AssignedToUserID { get; set; }
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Vui lòng chọn thời gian bắt đầu.")]
+        public DateTime? StartTime { get; set; }
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Vui lòng chọn thời gian kết thúc.")]
+        public DateTime? EndTime { get; set; }
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Vui lòng chọn người phụ trách.")]
+        public long? AssignedToUserID { get; set; }
     }
 
     /// <summary>

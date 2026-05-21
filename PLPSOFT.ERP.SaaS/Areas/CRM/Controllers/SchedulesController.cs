@@ -179,9 +179,9 @@ namespace PLPSOFT.ERP.SaaS.Areas.CRM.Controllers
             if (id != dto.ScheduleID)
                 return BadRequest();
 
-            if (dto.EndTime < dto.StartTime)
+            if (dto.StartTime.HasValue && dto.EndTime.HasValue && dto.EndTime.Value < dto.StartTime.Value)
             {
-                ModelState.AddModelError("EndTime", "Thời gian kết thúc phải sau thời gian bắt đầu.");
+                ModelState.AddModelError("UpdateDto.EndTime", "Thời gian kết thúc phải sau thời gian bắt đầu.");
             }
 
             if (!ModelState.IsValid)
