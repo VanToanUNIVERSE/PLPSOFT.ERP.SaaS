@@ -118,11 +118,23 @@ namespace PLPSOFT.ERP.SaaS.Areas.CRM.Controllers
             if (!ModelState.IsValid)
             {
                 ViewBag.FormData = await _feedbackService.GetFormDataAsync(CurrentCompanyID);
+                ViewBag.Detail   = await _feedbackService.GetByIdAsync(id);
                 return View(dto);
             }
-            await _feedbackService.UpdateAsync(dto);
-            TempData["Success"] = "Cập nhật phản hồi thành công!";
-            return RedirectToAction(nameof(Details), new { id });
+
+            try
+            {
+                await _feedbackService.UpdateAsync(dto);
+                TempData["Success"] = "Cập nhật phản hồi thành công!";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                ViewBag.FormData = await _feedbackService.GetFormDataAsync(CurrentCompanyID);
+                ViewBag.Detail   = await _feedbackService.GetByIdAsync(id);
+                return View(dto);
+            }
         }
 
         // =====================================================
@@ -176,11 +188,23 @@ namespace PLPSOFT.ERP.SaaS.Areas.CRM.Controllers
             if (!ModelState.IsValid)
             {
                 ViewBag.FormData = await _feedbackService.GetFormDataAsync(CurrentCompanyID);
+                ViewBag.Detail   = await _feedbackService.GetByIdAsync(id);
                 return View(dto);
             }
-            await _feedbackService.ResolveAsync(dto);
-            TempData["Success"] = "Xử lý phản hồi thành công!";
-            return RedirectToAction(nameof(Details), new { id });
+
+            try
+            {
+                await _feedbackService.ResolveAsync(dto);
+                TempData["Success"] = "Xử lý phản hồi thành công!";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                ViewBag.FormData = await _feedbackService.GetFormDataAsync(CurrentCompanyID);
+                ViewBag.Detail   = await _feedbackService.GetByIdAsync(id);
+                return View(dto);
+            }
         }
 
         // =====================================================

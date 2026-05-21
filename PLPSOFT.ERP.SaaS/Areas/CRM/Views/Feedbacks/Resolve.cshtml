@@ -53,7 +53,7 @@
                                 {
                                     foreach (var item in formData.Statuses)
                                     {
-                                        <option value="@item.Value">@item.Text</option>
+                                        <option value="@item.Value" data-code="@item.Code">@item.Text</option>
                                     }
                                 }
                             </select>
@@ -83,4 +83,42 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            const assignedToUserId = @(detail?.AssignedToUserID?.ToString() ?? "null");
+
+            $('form').on('submit', function(e) {
+                const selectedStatusOption = $('#StatusID option:selected');
+                const statusCode = selectedStatusOption.data('code');
+
+                if ((statusCode === 'RESOLVED' || statusCode === 'CLOSED') && !assignedToUserId) {
+                    e.preventDefault();
+                    let validationSpan = $('#StatusID').siblings('.text-danger');
+                    if (validationSpan.length === 0) {
+                        $('#StatusID').after('<span class="text-danger small field-validation-error"></span>');
+                        validationSpan = $('#StatusID').siblings('.text-danger');
+                    }
+                    validationSpan.text('Không thể xử lý/đóng phản hồi này vì chưa gán nhân viên xử lý. Vui lòng gán nhân viên trước.');
+                    
+                    $('html, body').animate({
+                        scrollTop: $('#StatusID').offset().top - 100
+                    }, 200);
+                    
+                    $('#StatusID').addClass('is-invalid');
+                } else {
+                    $('#StatusID').removeClass('is-invalid');
+                }
+            });
+
+            $('#StatusID').on('change', function() {
+                const selectedStatusOption = $('#StatusID option:selected');
+                const statusCode = selectedStatusOption.data('code');
+
+                if (!((statusCode === 'RESOLVED' || statusCode === 'CLOSED') && !assignedToUserId)) {
+                    $('#StatusID').removeClass('is-invalid');
+                    $('#StatusID').siblings('.field-validation-error').text('');
+                }
+            });
+        });
+    </script>
 }

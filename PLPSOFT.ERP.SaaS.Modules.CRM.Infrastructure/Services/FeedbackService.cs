@@ -106,6 +106,15 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
         // =====================================================
         public async Task<long> CreateAsync(CreateFeedbackDto dto)
         {
+            var status = await _context.SystemTypeValues.FindAsync(dto.StatusID);
+            if (status != null && (status.ValueCode == "RESOLVED" || status.ValueCode == "CLOSED"))
+            {
+                if (dto.AssignedToUserID == null)
+                {
+                    throw new InvalidOperationException("Không thể chuyển trạng thái sang đã giải quyết hoặc đã đóng khi chưa gán nhân viên xử lý.");
+                }
+            }
+
             var feedback = new CustomerFeedback
             {
                 CompanyID      = dto.CompanyID,
@@ -139,6 +148,15 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
 
             if (feedback == null)
                 throw new Exception($"Không tìm thấy phản hồi ID = {dto.FeedbackID}");
+
+            var status = await _context.SystemTypeValues.FindAsync(dto.StatusID);
+            if (status != null && (status.ValueCode == "RESOLVED" || status.ValueCode == "CLOSED"))
+            {
+                if (feedback.AssignedToUserID == null)
+                {
+                    throw new InvalidOperationException("Không thể chuyển trạng thái sang đã giải quyết hoặc đã đóng khi chưa gán nhân viên xử lý. Vui lòng gán nhân viên trước.");
+                }
+            }
 
             feedback.InvoiceID      = dto.InvoiceID;
             feedback.FeedbackTypeID = dto.FeedbackTypeID;
@@ -177,6 +195,15 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
 
             if (feedback == null)
                 throw new Exception($"Không tìm thấy phản hồi ID = {dto.FeedbackID}");
+
+            var status = await _context.SystemTypeValues.FindAsync(dto.StatusID);
+            if (status != null && (status.ValueCode == "RESOLVED" || status.ValueCode == "CLOSED"))
+            {
+                if (feedback.AssignedToUserID == null)
+                {
+                    throw new InvalidOperationException("Không thể xử lý/đóng phản hồi này vì chưa gán nhân viên xử lý. Vui lòng gán nhân viên trước.");
+                }
+            }
 
             feedback.Resolution  = dto.Resolution;
             feedback.StatusID    = dto.StatusID;
@@ -229,7 +256,7 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
 
             var statuses = await _context.SystemTypeValues
                 .Where(v => v.Type!.TypeCode == "CRM_STATUS" && v.IsActive)
-                .Select(v => new DropdownItem { Value = v.TypeValueID, Text = v.ValueName })
+                .Select(v => new DropdownItem { Value = v.TypeValueID, Text = v.ValueName, Code = v.ValueCode })
                 .ToListAsync();
 
             var invoices = await _context.SalesInvoices

@@ -63,6 +63,7 @@
                             <th>Loại</th>
                             <th>Ưu tiên</th>
                             <th>Trạng thái</th>
+                            <th>Nhân viên xử lý</th>
                             <th>Thao tác</th>
                         </tr>
                     </thead>
@@ -99,6 +100,16 @@
                                         }
                                         <span class="badge @statusClass">@item.StatusName</span>
                                     </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.AssignedToUserName))
+                                        {
+                                            <span class="text-dark font-weight-bold">@item.AssignedToUserName</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted font-italic">Chưa gán</span>
+                                        }
+                                    </td>
                                     <td class="text-center">
                                         <div class="" role="group">
                                             <a asp-action="Details" asp-route-id="@item.FeedbackID" class="btn btn-sm btn-info text-white me-2" title="Xem chi tiết">
@@ -128,7 +139,7 @@
                         else
                         {
                             <tr>
-                                <td colspan="7" class="text-center">Không có dữ liệu phản hồi nào.</td>
+                                <td colspan="8" class="text-center">Không có dữ liệu phản hồi nào.</td>
                             </tr>
                         }
                     </tbody>
