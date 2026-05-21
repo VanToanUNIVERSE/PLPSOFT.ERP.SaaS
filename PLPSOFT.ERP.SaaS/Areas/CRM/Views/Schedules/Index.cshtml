@@ -107,20 +107,20 @@
                                              </a>
                                              @if (item.StatusCode == "PLANNED")
                                              {
-                                                 <form asp-action="Complete" asp-route-id="@item.ScheduleID" method="post" style="display:inline" onsubmit="return confirm('Xác nhận đánh dấu hoàn thành lịch hẹn này?')">
+                                                 <form asp-action="Complete" asp-route-id="@item.ScheduleID" method="post" style="display:inline" data-confirm="Xác nhận đánh dấu hoàn thành lịch hẹn này?">
                                                      @Html.AntiForgeryToken()
                                                      <button type="submit" class="btn btn-sm btn-success text-white me-2" title="Hoàn thành">
                                                          <i class="fas fa-check"></i>
                                                      </button>
                                                  </form>
-                                                 <form asp-action="Cancel" asp-route-id="@item.ScheduleID" method="post" style="display:inline" onsubmit="return confirm('Xác nhận hủy lịch hẹn này?')">
+                                                 <form asp-action="Cancel" asp-route-id="@item.ScheduleID" method="post" style="display:inline" data-confirm="Xác nhận hủy lịch hẹn này?">
                                                      @Html.AntiForgeryToken()
                                                      <button type="submit" class="btn btn-sm btn-secondary text-white me-2" title="Hủy lịch">
                                                          <i class="fas fa-times"></i>
                                                      </button>
                                                  </form>
                                              }
-                                             <form asp-action="Delete" asp-route-id="@item.ScheduleID" method="post" style="display:inline" onsubmit="return confirm('Xác nhận xóa lịch hẹn này?')">
+                                             <form asp-action="Delete" asp-route-id="@item.ScheduleID" method="post" style="display:inline" data-confirm="Xác nhận xóa lịch hẹn này?">
                                                  @Html.AntiForgeryToken()
                                                  <button type="submit" class="btn btn-sm btn-danger text-white me-2" title="Xóa">
                                                      <i class="fas fa-trash"></i>

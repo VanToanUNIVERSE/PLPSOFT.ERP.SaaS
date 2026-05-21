@@ -45,9 +45,9 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Application.Interfaces
         Task<List<ScheduleListViewModel>> GetOverdueAsync();
 
         /// <summary>
-        /// Lấy danh sách lịch sắp tới (trong ngày hoặc trong tuần)
+        /// Lấy danh sách lịch sắp tới (trong ngày, trong tuần hoặc tất cả lịch sắp tới)
         /// </summary>
-        Task<List<ScheduleListViewModel>> GetUpcomingAsync(bool thisWeek = false);
+        Task<List<ScheduleListViewModel>> GetUpcomingAsync(bool? thisWeek = null);
 
         /// <summary>
         /// Lấy danh sách lịch sắp đến trong 30 phút (logic nhắc hẹn)

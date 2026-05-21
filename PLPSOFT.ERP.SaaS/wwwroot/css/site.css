@@ -185,3 +185,98 @@ body {
         transform: translateY(0);
     }
 }
+
+/* =============================================
+   HỆ THỐNG XÁC NHẬN - CUSTOM CONFIRM MODAL
+   ============================================= */
+
+#modernConfirmModal {
+  backdrop-filter: blur(4px);
+  background-color: rgba(15, 23, 42, 0.3); /* Sleek glassmorphism overlay */
+  transition: all 0.3s ease;
+}
+
+#modernConfirmModal .modal-content {
+  transform: scale(0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#modernConfirmModal.show .modal-content {
+  transform: scale(1);
+}
+
+#modernConfirmModal .modal-body {
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+#modernConfirmModal .btn-light {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+  color: #64748b;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+#modernConfirmModal .btn-light:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #334155;
+  transform: translateY(-1px);
+}
+
+#modernConfirmModal .btn-confirm {
+  font-weight: 600;
+  transition: all 0.2s ease;
+  transform: translateY(0);
+}
+
+#modernConfirmModal .btn-confirm:hover {
+  transform: translateY(-1px);
+}
+
+#modernConfirmModal .btn-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: none;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+#modernConfirmModal .btn-success:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+}
+
+#modernConfirmModal .btn-danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  border: none;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
+#modernConfirmModal .btn-danger:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35);
+}
+
+#modernConfirmModal .btn-warning {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border: none;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+}
+
+#modernConfirmModal .btn-warning:hover {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.35);
+}
+
+#modernConfirmModal .btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border: none;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+#modernConfirmModal .btn-primary:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35);
+}

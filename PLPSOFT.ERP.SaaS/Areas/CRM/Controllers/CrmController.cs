@@ -24,12 +24,13 @@ namespace PLPSOFT.ERP.SaaS.Areas.CRM.Controllers
             var data = await _feedbackService.GetDashboardDataAsync(CurrentCompanyID, CurrentBranchID);
             
             // Lấy thêm dữ liệu lịch chăm sóc
-            var upcoming = await _scheduleService.GetUpcomingAsync(false);
+            var allUpcoming = await _scheduleService.GetUpcomingAsync();
+            var todayUpcoming = await _scheduleService.GetUpcomingAsync(false);
             var overdue = await _scheduleService.GetOverdueAsync();
             
-            data.TotalUpcomingSchedules = upcoming.Count;
+            data.TotalUpcomingSchedules = allUpcoming.Count;
             data.TotalOverdueSchedules = overdue.Count;
-            data.TodaySchedules = upcoming.Take(5).ToList();
+            data.TodaySchedules = todayUpcoming.Take(5).ToList();
 
             return View(data);
         }

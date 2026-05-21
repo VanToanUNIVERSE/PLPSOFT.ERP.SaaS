@@ -244,29 +244,36 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
 
         #region Lọc lịch sắp tới
 
-        public async Task<List<ScheduleListViewModel>> GetUpcomingAsync(bool thisWeek = false)
+        public async Task<List<ScheduleListViewModel>> GetUpcomingAsync(bool? thisWeek = null)
         {
             var now = DateTime.Now;
-            DateTime endRange;
+            DateTime? endRange = null;
 
-            if (thisWeek)
+            if (thisWeek.HasValue)
             {
-                // Tính ngày cuối tuần (Chủ nhật)
-                int daysUntilSunday = ((int)DayOfWeek.Sunday - (int)now.DayOfWeek + 7) % 7;
-                if (daysUntilSunday == 0) daysUntilSunday = 7;
-                endRange = now.Date.AddDays(daysUntilSunday).AddDays(1).AddSeconds(-1);
-            }
-            else
-            {
-                // Trong ngày
-                endRange = now.Date.AddDays(1).AddSeconds(-1);
+                if (thisWeek.Value)
+                {
+                    // Tính ngày cuối tuần (Chủ nhật)
+                    int daysUntilSunday = ((int)DayOfWeek.Sunday - (int)now.DayOfWeek + 7) % 7;
+                    if (daysUntilSunday == 0) daysUntilSunday = 7;
+                    endRange = now.Date.AddDays(daysUntilSunday).AddDays(1).AddSeconds(-1);
+                }
+                else
+                {
+                    // Trong ngày
+                    endRange = now.Date.AddDays(1).AddSeconds(-1);
+                }
             }
 
             var query = BuildBaseQuery()
                 .Where(s => s.EndTime >= now
-                    && s.StartTime <= endRange
                     && s.Status != null
                     && s.Status.ValueCode == "PLANNED");
+
+            if (endRange.HasValue)
+            {
+                query = query.Where(s => s.StartTime <= endRange.Value);
+            }
 
             return await ProjectToListViewModel(query)
                 .OrderBy(s => s.StartTime)
