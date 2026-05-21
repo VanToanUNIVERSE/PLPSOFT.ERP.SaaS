@@ -22,12 +22,17 @@
                 <input type="hidden" asp-for="FeedbackID" />
 
                 <div class="row mb-3">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label font-weight-bold">Khách hàng</label>
                         <input type="text" class="form-control bg-light" value="@detail?.CustomerName" readonly>
                         <small class="text-muted">Không được phép đổi khách hàng sau khi tạo.</small>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
+                        <label class="form-label font-weight-bold">Nhân viên xử lý</label>
+                        <input type="text" class="form-control bg-light" value="@(detail?.AssignedToUserName ?? "Chưa gán")" readonly>
+                        <small class="text-muted">Gán nhân viên bằng nút "Gán" ngoài danh sách.</small>
+                    </div>
+                    <div class="col-md-4">
                         <label asp-for="StatusID" class="form-label font-weight-bold">Trạng thái xử lý <span class="text-danger">*</span></label>
                         <select asp-for="StatusID" class="form-select border-primary" required>
                             @if (formData?.Statuses != null)
@@ -123,14 +128,14 @@
                 const selectedStatusOption = $('#StatusID option:selected');
                 const statusCode = selectedStatusOption.data('code');
 
-                if ((statusCode === 'RESOLVED' || statusCode === 'CLOSED') && !assignedToUserId) {
+                if ((statusCode === 'NEW' || statusCode === 'PROCESSING' || statusCode === 'RESOLVED' || statusCode === 'CLOSED') && !assignedToUserId) {
                     e.preventDefault();
                     let validationSpan = $('#StatusID').siblings('.text-danger');
                     if (validationSpan.length === 0) {
                         $('#StatusID').after('<span class="text-danger small field-validation-error"></span>');
                         validationSpan = $('#StatusID').siblings('.text-danger');
                     }
-                    validationSpan.text('Không thể chuyển trạng thái sang đã giải quyết hoặc đã đóng khi chưa gán nhân viên xử lý. Vui lòng gán nhân viên trước.');
+                    validationSpan.text('Không thể chuyển trạng thái khi chưa gán nhân viên xử lý. Vui lòng gán nhân viên trước.');
                     
                     $('html, body').animate({
                         scrollTop: $('#StatusID').offset().top - 100
@@ -146,7 +151,7 @@
                 const selectedStatusOption = $('#StatusID option:selected');
                 const statusCode = selectedStatusOption.data('code');
 
-                if (!((statusCode === 'RESOLVED' || statusCode === 'CLOSED') && !assignedToUserId)) {
+                if (!((statusCode === 'NEW' || statusCode === 'PROCESSING' || statusCode === 'RESOLVED' || statusCode === 'CLOSED') && !assignedToUserId)) {
                     $('#StatusID').removeClass('is-invalid');
                     $('#StatusID').siblings('.field-validation-error').text('');
                 }

@@ -28,6 +28,10 @@
                         <span class="text-dark">@detail?.CustomerName</span>
                     </div>
                     <div class="mb-3">
+                        <label class="text-muted small text-uppercase d-block">Nhân viên xử lý</label>
+                        <span class="text-dark font-weight-bold">@(detail?.AssignedToUserName ?? "Chưa gán")</span>
+                    </div>
+                    <div class="mb-3">
                         <label class="text-muted small text-uppercase d-block">Nội dung phản hồi</label>
                         <p class="text-dark bg-light p-3 border rounded">@detail?.Content</p>
                     </div>
@@ -91,14 +95,14 @@
                 const selectedStatusOption = $('#StatusID option:selected');
                 const statusCode = selectedStatusOption.data('code');
 
-                if ((statusCode === 'RESOLVED' || statusCode === 'CLOSED') && !assignedToUserId) {
+                if ((statusCode === 'NEW' || statusCode === 'PROCESSING' || statusCode === 'RESOLVED' || statusCode === 'CLOSED') && !assignedToUserId) {
                     e.preventDefault();
                     let validationSpan = $('#StatusID').siblings('.text-danger');
                     if (validationSpan.length === 0) {
                         $('#StatusID').after('<span class="text-danger small field-validation-error"></span>');
                         validationSpan = $('#StatusID').siblings('.text-danger');
                     }
-                    validationSpan.text('Không thể xử lý/đóng phản hồi này vì chưa gán nhân viên xử lý. Vui lòng gán nhân viên trước.');
+                    validationSpan.text('Không thể xử lý phản hồi này vì chưa gán nhân viên xử lý. Vui lòng gán nhân viên trước.');
                     
                     $('html, body').animate({
                         scrollTop: $('#StatusID').offset().top - 100
@@ -114,7 +118,7 @@
                 const selectedStatusOption = $('#StatusID option:selected');
                 const statusCode = selectedStatusOption.data('code');
 
-                if (!((statusCode === 'RESOLVED' || statusCode === 'CLOSED') && !assignedToUserId)) {
+                if (!((statusCode === 'NEW' || statusCode === 'PROCESSING' || statusCode === 'RESOLVED' || statusCode === 'CLOSED') && !assignedToUserId)) {
                     $('#StatusID').removeClass('is-invalid');
                     $('#StatusID').siblings('.field-validation-error').text('');
                 }

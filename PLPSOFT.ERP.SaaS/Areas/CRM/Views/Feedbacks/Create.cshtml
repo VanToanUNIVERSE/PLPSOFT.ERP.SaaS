@@ -163,14 +163,14 @@
                 const statusCode = selectedStatusOption.data('code');
                 const assignedUserId = $('#AssignedToUserID').val();
 
-                if ((statusCode === 'RESOLVED' || statusCode === 'CLOSED') && !assignedUserId) {
+                if ((statusCode === 'NEW' || statusCode === 'PROCESSING' || statusCode === 'RESOLVED' || statusCode === 'CLOSED') && !assignedUserId) {
                     e.preventDefault();
                     let validationSpan = $('#StatusID').siblings('.text-danger');
                     if (validationSpan.length === 0) {
                         $('#StatusID').after('<span class="text-danger small field-validation-error"></span>');
                         validationSpan = $('#StatusID').siblings('.text-danger');
                     }
-                    validationSpan.text('Không thể chuyển trạng thái sang đã giải quyết hoặc đã đóng khi chưa gán nhân viên xử lý.');
+                    validationSpan.text('Không thể chuyển trạng thái khi chưa gán nhân viên xử lý. Vui lòng gán nhân viên trước.');
                     
                     $('html, body').animate({
                         scrollTop: $('#StatusID').offset().top - 100
@@ -187,7 +187,7 @@
                 const statusCode = selectedStatusOption.data('code');
                 const assignedUserId = $('#AssignedToUserID').val();
 
-                if (!((statusCode === 'RESOLVED' || statusCode === 'CLOSED') && !assignedUserId)) {
+                if (!((statusCode === 'NEW' || statusCode === 'PROCESSING' || statusCode === 'RESOLVED' || statusCode === 'CLOSED') && !assignedUserId)) {
                     $('#StatusID').removeClass('is-invalid');
                     $('#StatusID').siblings('.field-validation-error').text('');
                 }

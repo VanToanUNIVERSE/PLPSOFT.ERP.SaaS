@@ -107,11 +107,11 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
         public async Task<long> CreateAsync(CreateFeedbackDto dto)
         {
             var status = await _context.SystemTypeValues.FindAsync(dto.StatusID);
-            if (status != null && (status.ValueCode == "RESOLVED" || status.ValueCode == "CLOSED"))
+            if (status != null && (status.ValueCode == "NEW" || status.ValueCode == "PROCESSING" || status.ValueCode == "RESOLVED" || status.ValueCode == "CLOSED"))
             {
                 if (dto.AssignedToUserID == null)
                 {
-                    throw new InvalidOperationException("Không thể chuyển trạng thái sang đã giải quyết hoặc đã đóng khi chưa gán nhân viên xử lý.");
+                    throw new InvalidOperationException($"Không thể chuyển trạng thái sang {status.ValueName.ToLower()} khi chưa gán nhân viên xử lý. Vui lòng gán nhân viên trước.");
                 }
             }
 
@@ -150,11 +150,11 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
                 throw new Exception($"Không tìm thấy phản hồi ID = {dto.FeedbackID}");
 
             var status = await _context.SystemTypeValues.FindAsync(dto.StatusID);
-            if (status != null && (status.ValueCode == "RESOLVED" || status.ValueCode == "CLOSED"))
+            if (status != null && (status.ValueCode == "NEW" || status.ValueCode == "PROCESSING" || status.ValueCode == "RESOLVED" || status.ValueCode == "CLOSED"))
             {
                 if (feedback.AssignedToUserID == null)
                 {
-                    throw new InvalidOperationException("Không thể chuyển trạng thái sang đã giải quyết hoặc đã đóng khi chưa gán nhân viên xử lý. Vui lòng gán nhân viên trước.");
+                    throw new InvalidOperationException($"Không thể chuyển trạng thái sang {status.ValueName.ToLower()} khi chưa gán nhân viên xử lý. Vui lòng gán nhân viên trước.");
                 }
             }
 
@@ -197,7 +197,7 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
                 throw new Exception($"Không tìm thấy phản hồi ID = {dto.FeedbackID}");
 
             var status = await _context.SystemTypeValues.FindAsync(dto.StatusID);
-            if (status != null && (status.ValueCode == "RESOLVED" || status.ValueCode == "CLOSED"))
+            if (status != null && (status.ValueCode == "NEW" || status.ValueCode == "PROCESSING" || status.ValueCode == "RESOLVED" || status.ValueCode == "CLOSED"))
             {
                 if (feedback.AssignedToUserID == null)
                 {
