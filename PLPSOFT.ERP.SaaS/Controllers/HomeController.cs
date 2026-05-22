@@ -15,7 +15,7 @@ namespace PLPSOFT.ERP.SaaS.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction("Details", "CustomerTimeline", new { area = "CRM", id = 1 });
         }
 
         public IActionResult Privacy()

@@ -1,0 +1,495 @@
+@model IEnumerable<PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.TimelineItemDto>
+@{
+    ViewData["Title"] = "Hồ sơ 360° Khách hàng";
+    var notes = ViewBag.Notes as IEnumerable<PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.CustomerNoteDto> ?? new List<PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.CustomerNoteDto>();
+}
+
+<style>
+    /* Tổng quan giao diện sang trọng */
+    body {
+        background-color: #f5f7fb;
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    /* Card custom */
+    .card-premium {
+        border: none;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        background-color: #ffffff;
+        margin-bottom: 24px;
+        overflow: hidden;
+    }
+    
+    .card-premium .card-header {
+        font-weight: 600;
+        padding: 14px 20px;
+        border-bottom: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Card Ghi chú - Tông Vàng Cát Sang Trọng */
+    .card-notes-header {
+        background-color: #e1a812;
+        color: #1a365d;
+    }
+    
+    .btn-save-note {
+        background-color: #e1a812;
+        color: #1a365d;
+        border: none;
+        font-weight: 600;
+        padding: 10px;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+    .btn-save-note:hover {
+        background-color: #c9940e;
+        color: #1a365d;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    }
+
+    /* Card Timeline - Tông Xanh Dương Navy */
+    .card-timeline-header {
+        background-color: #1a365d;
+        color: #ffffff;
+    }
+
+    /* Bộ lọc sự kiện */
+    .filter-container {
+        background-color: #f8fafc;
+        border-radius: 6px;
+        padding: 12px 18px;
+        border: 1px dashed #e2e8f0;
+        margin-bottom: 20px;
+    }
+
+    .filter-btn {
+        border: none;
+        border-radius: 4px;
+        padding: 6px 14px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-right: 8px;
+        opacity: 0.4;
+        transition: all 0.2s ease;
+        color: #ffffff;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    
+    .filter-btn.active {
+        opacity: 1;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* Màu các nút lọc khớp hình ảnh */
+    .filter-btn-note { background-color: #e1a812; color: #1a365d; }
+    .filter-btn-feedback { background-color: #c0392b; }
+    .filter-btn-schedule { background-color: #2980b9; }
+    .filter-btn-invoice { background-color: #27ae60; }
+
+    .filter-link {
+        font-size: 0.85rem;
+        color: #e74c3c;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.15s ease;
+    }
+    .filter-link:hover {
+        color: #c0392b;
+        text-decoration: underline;
+    }
+
+    /* Timeline Items */
+    .timeline-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .timeline-item {
+        border: 1px solid #edf2f7;
+        border-radius: 6px;
+        background-color: #ffffff;
+        padding: 16px 20px;
+        transition: all 0.2s ease;
+    }
+    
+    .timeline-item:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.03);
+    }
+
+    /* Viền bên trái cho từng loại sự kiện */
+    .timeline-item-NOTE { border-left: 5px solid #e1a812; }
+    .timeline-item-FEEDBACK { border-left: 5px solid #c0392b; }
+    .timeline-item-SCHEDULE { border-left: 5px solid #2980b9; }
+    .timeline-item-INVOICE { border-left: 5px solid #27ae60; }
+
+    /* Badge cho từng loại sự kiện */
+    .badge-timeline {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: 3px;
+    }
+    .badge-note { background-color: #fef9e7; color: #b7950b; border: 1px solid #f9e79f; }
+    .badge-feedback { background-color: #fdedd8; color: #c0392b; border: 1px solid #fadbd8; }
+    .badge-schedule { background-color: #ebf5fb; color: #2980b9; border: 1px solid #d4e6f1; }
+    .badge-invoice { background-color: #eaf2f8; color: #27ae60; border: 1px solid #d5f5e3; }
+
+    /* Danh sách ghi chú ở cột trái */
+    .note-list-container {
+        max-height: 350px;
+        overflow-y: auto;
+    }
+
+    .note-list-item {
+        padding: 12px 0;
+        border-bottom: 1px dashed #edf2f7;
+    }
+    .note-list-item:last-child {
+        border-bottom: none;
+    }
+
+    .note-time {
+        font-size: 0.8rem;
+        color: #a0aec0;
+        font-weight: 500;
+    }
+    .note-text {
+        font-size: 0.95rem;
+        color: #4a5568;
+        margin-top: 4px;
+    }
+
+    /* Nút quay lại */
+    .btn-back {
+        color: #4a5568;
+        border: 1px solid #cbd5e0;
+        background-color: #ffffff;
+        font-weight: 500;
+        font-size: 0.85rem;
+        padding: 6px 12px;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+    }
+    .btn-back:hover {
+        background-color: #f7fafc;
+        color: #2d3748;
+        border-color: #a0aec0;
+    }
+    
+    /* Hiệu ứng viền đỏ phát sáng cho ô lỗi */
+    .form-control.is-invalid {
+        border-color: #e74c3c !important;
+        box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.15) !important;
+    }
+</style>
+
+<div class="container-fluid py-3 px-4">
+    <!-- Nút quay lại -->
+    <div class="mb-3">
+        <a href="#" class="btn-back">
+            <span>←</span> Quay lại danh sách khách hàng
+        </a>
+    </div>
+
+    <!-- Tiêu đề lớn -->
+    <h4 class="mb-4 font-weight-bold" style="color: #2d3748; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+        👤 Hồ sơ 360° Khách hàng (ID: @ViewBag.CustomerID)
+    </h4>
+
+    <div class="row">
+        <!-- Cột trái: Thêm & Xem ghi chú -->
+        <div class="col-md-4">
+            <!-- Form Thêm Ghi chú -->
+            <div class="card card-premium">
+                <div class="card-header card-notes-header">
+                    <span>📝</span> Thêm Ghi chú (Customer Notes)
+                </div>
+                <div class="card-body p-4">
+                    <textarea id="txtNoteContent" class="form-control" rows="5" 
+                              placeholder="Nhập ghi chú... VD: Khách thích được liên hệ buổi sáng"
+                              style="border-radius: 4px; font-size: 0.95rem; resize: none; transition: all 0.2s ease;"></textarea>
+                    <div id="note-error-msg" class="text-danger mt-1 small" style="display: none; font-weight: 500;">
+                        ⚠️ Vui lòng nhập nội dung ghi chú!
+                    </div>
+                    <button class="btn-save-note w-100 mt-3" id="btnSaveNote" onclick="saveNote()">
+                        <span>💾</span> Lưu Ghi Chú
+                    </button>
+                </div>
+            </div>
+
+            <!-- Danh sách ghi chú nội bộ -->
+            <div class="card card-premium">
+                <div class="card-header bg-light text-dark border-bottom" style="font-weight: 600;">
+                    <span>📝</span> Danh sách Ghi chú
+                </div>
+                <div class="card-body p-4">
+                    <div class="note-list-container">
+                        @if (!notes.Any())
+                        {
+                            <p class="text-muted text-center py-3">Chưa có ghi chú nào cho khách hàng này.</p>
+                        }
+                        else
+                        {
+                            foreach (var note in notes)
+                            {
+                                <div class="note-list-item">
+                                    <div class="note-time">@note.CreatedAt.ToString("dd/MM/yyyy HH:mm")</div>
+                                    <div class="note-text">@note.Content</div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cột phải: Dòng thời gian Timeline -->
+        <div class="col-md-8">
+            <div class="card card-premium">
+                <div class="card-header card-timeline-header">
+                    <span>🔥</span> Lịch sử tương tác (Customer Timeline)
+                </div>
+                <div class="card-body p-4">
+                    
+                    <!-- Bộ lọc tương tác chuyên nghiệp -->
+                    <div class="filter-container d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div class="d-flex align-items-center flex-wrap gap-2">
+                            <span class="text-secondary font-weight-bold me-2" style="font-size: 0.9rem;">⏳ Lọc theo:</span>
+                            
+                            <button class="filter-btn filter-btn-note active" data-filter="NOTE">
+                                🟡 Ghi chú
+                            </button>
+                            <button class="filter-btn filter-btn-feedback active" data-filter="FEEDBACK">
+                                🔴 Phản hồi
+                            </button>
+                            <button class="filter-btn filter-btn-schedule active" data-filter="SCHEDULE">
+                                🔵 Lịch hẹn
+                            </button>
+                            <button class="filter-btn filter-btn-invoice active" data-filter="INVOICE">
+                                🟢 Hóa đơn
+                            </button>
+                        </div>
+                        
+                        <div style="font-size: 0.9rem;">
+                            <a href="#" class="filter-link" id="btnSelectAll" style="color: #2b6cb0;">Chọn tất cả</a>
+                            <span class="text-muted mx-1">|</span>
+                            <a href="#" class="filter-link text-danger" id="btnDeselectAll">Bỏ chọn</a>
+                        </div>
+                    </div>
+
+                    <!-- Danh sách timeline -->
+                    <div class="timeline-list">
+                        @if (Model == null || !Model.Any())
+                        {
+                            <div class="text-muted text-center py-5">Không tìm thấy lịch sử tương tác nào của khách hàng này.</div>
+                        }
+                        else
+                        {
+                            foreach (var item in Model)
+                            {
+                                var badgeClass = "";
+                                switch(item.EventType)
+                                {
+                                    case "NOTE": badgeClass = "badge-note"; break;
+                                    case "FEEDBACK": badgeClass = "badge-feedback"; break;
+                                    case "SCHEDULE": badgeClass = "badge-schedule"; break;
+                                    case "INVOICE": badgeClass = "badge-invoice"; break;
+                                }
+
+                                <div class="timeline-item timeline-item-@item.EventType" data-type="@item.EventType">
+                                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                                        <h6 class="mb-0 font-weight-bold" style="color: #2d3748; font-size: 1rem; display: flex; align-items: center; gap: 8px;">
+                                            <span class="badge-timeline @badgeClass">@item.EventBadge</span>
+                                            @item.Title
+                                        </h6>
+                                        <small class="text-muted font-weight-bold" style="font-size: 0.85rem;">@item.EventTime.ToString("dd/MM/yyyy HH:mm")</small>
+                                    </div>
+                                    <p class="mb-0 text-secondary mt-2" style="font-size: 0.95rem; line-height: 1.5;">@item.Description</p>
+                                </div>
+                            }
+                        }
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container để hiển thị thông báo thay thế alert -->
+<div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index: 10000; max-width: 350px;"></div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    // 1. Toast Notification Custom
+    function showToast(message, type = 'success') {
+        var toastId = 'toast-' + Date.now();
+        var bgClass = type === 'success' ? 'linear-gradient(135deg, #27ae60, #2ecc71)' : 'linear-gradient(135deg, #e74c3c, #c0392b)';
+        var icon = type === 'success' ? '✅' : '⚠️';
+        
+        var toastHtml = `
+            <div id="${toastId}" class="toast-custom" style="
+                background: ${bgClass};
+                color: #ffffff;
+                padding: 12px 20px;
+                border-radius: 8px;
+                margin-bottom: 10px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                transform: translateX(120%);
+                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                font-weight: 500;
+                font-size: 0.95rem;
+                min-width: 300px;
+            ">
+                <span style="font-size: 1.2rem;">${icon}</span>
+                <div style="flex-grow: 1;">${message}</div>
+                <button onclick="this.parentElement.remove()" style="
+                    background: none;
+                    border: none;
+                    color: #ffffff;
+                    font-weight: bold;
+                    cursor: pointer;
+                    opacity: 0.8;
+                    padding: 0;
+                    margin-left: 10px;
+                    font-size: 1.2rem;
+                    line-height: 1;
+                ">×</button>
+            </div>
+        `;
+        
+        $('#toast-container').append(toastHtml);
+        
+        // Kích hoạt hiệu ứng slide-in
+        setTimeout(function() {
+            $('#' + toastId).css('transform', 'translateX(0)');
+        }, 10);
+        
+        // Tự động ẩn sau 3.5 giây
+        setTimeout(function() {
+            $('#' + toastId).css({
+                'transform': 'translateX(120%)',
+                'opacity': '0'
+            });
+            setTimeout(function() {
+                $('#' + toastId).remove();
+            }, 400);
+        }, 3500);
+    }
+
+    // 2. Lưu ghi chú bằng Ajax
+    function saveNote() {
+        var $txtNoteContent = $('#txtNoteContent');
+        var $errorMsg = $('#note-error-msg');
+        var content = $txtNoteContent.val().trim();
+        var customerId = @(ViewBag.CustomerID ?? 0);
+
+        // Reset trạng thái lỗi cũ
+        $txtNoteContent.removeClass('is-invalid');
+        $errorMsg.hide();
+
+        if (!content) {
+            $txtNoteContent.addClass('is-invalid');
+            $errorMsg.fadeIn(150);
+            showToast('Nội dung ghi chú không được để trống!', 'error');
+            return;
+        }
+
+        // Vô hiệu hóa nút bấm và hiển thị trạng thái đang xử lý
+        var $btn = $('#btnSaveNote');
+        var originalBtnHtml = $btn.html();
+        $btn.prop('disabled', true).html('<span>⏳</span> Đang lưu...');
+
+        $.ajax({
+            url: '/CRM/CustomerTimeline/AddNote',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ CustomerID: customerId, Content: content }),
+            success: function () {
+                showToast('Thêm ghi chú thành công!', 'success');
+                $txtNoteContent.val(''); // Clear form
+                setTimeout(function() {
+                    location.reload();
+                }, 1000);
+            },
+            error: function () {
+                showToast('Có lỗi xảy ra khi lưu ghi chú', 'error');
+                $btn.prop('disabled', false).html(originalBtnHtml);
+            }
+        });
+    }
+
+    // 2. Logic Bộ lọc Timeline Client-side Mượt Mà
+    $(document).ready(function () {
+        var activeFilters = {
+            'NOTE': true,
+            'FEEDBACK': true,
+            'SCHEDULE': true,
+            'INVOICE': true
+        };
+
+        function filterTimeline() {
+            $('.timeline-item').each(function () {
+                var type = $(this).data('type');
+                if (activeFilters[type]) {
+                    $(this).fadeIn(150);
+                } else {
+                    $(this).fadeOut(150);
+                }
+            });
+        }
+
+        // Click từng nút lọc
+        $('.filter-btn').click(function () {
+            var type = $(this).data('filter');
+            activeFilters[type] = !activeFilters[type];
+
+            if (activeFilters[type]) {
+                $(this).addClass('active');
+            } else {
+                $(this).removeClass('active');
+            }
+
+            filterTimeline();
+        });
+
+        // Nút Chọn tất cả
+        $('#btnSelectAll').click(function (e) {
+            e.preventDefault();
+            $('.filter-btn').addClass('active');
+            for (var key in activeFilters) {
+                activeFilters[key] = true;
+            }
+            filterTimeline();
+        });
+
+        // Nút Bỏ chọn
+        $('#btnDeselectAll').click(function (e) {
+            e.preventDefault();
+            $('.filter-btn').removeClass('active');
+            for (var key in activeFilters) {
+                activeFilters[key] = false;
+            }
+            filterTimeline();
+        });
+    });
+</script>
