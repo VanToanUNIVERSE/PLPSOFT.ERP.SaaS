@@ -158,12 +158,70 @@
 
 @section Scripts {
     <script>
+        function showToast(message, type = 'info') {
+            var container = document.getElementById('toastContainer');
+            if (!container) {
+                var div = document.createElement('div');
+                div.id = 'toastContainer';
+                div.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+                div.style.zIndex = '1100';
+                document.body.appendChild(div);
+                container = div;
+            }
+
+            var toastId = 'toast_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+            var bgClass = 'bg-info';
+            var iconClass = 'fas fa-info-circle';
+            
+            if (type === 'success') {
+                bgClass = 'bg-success';
+                iconClass = 'fas fa-check-circle';
+            } else if (type === 'danger' || type === 'error') {
+                bgClass = 'bg-danger';
+                iconClass = 'fas fa-exclamation-circle';
+            } else if (type === 'warning') {
+                bgClass = 'bg-warning text-dark';
+                iconClass = 'fas fa-exclamation-triangle';
+            }
+
+            var btnCloseClass = bgClass.includes('text-dark') ? '' : 'btn-close-white';
+
+            var toastHtml = `
+                <div id="${toastId}" class="toast align-items-center text-white ${bgClass} border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000">
+                    <div class="d-flex">
+                        <div class="toast-body d-flex align-items-center">
+                            <i class="${iconClass} fs-5 me-2"></i>
+                            <div class="fw-semibold">${message}</div>
+                        </div>
+                        <button type="button" class="btn-close ${btnCloseClass} me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', toastHtml);
+            var toastEl = document.getElementById(toastId);
+            var toast = new bootstrap.Toast(toastEl);
+            toast.show();
+
+            toastEl.addEventListener('hidden.bs.toast', function () {
+                toastEl.remove();
+            });
+        }
+
+        $(document).ready(function () {
+            // Check for success message from page reload
+            if (sessionStorage.getItem('note_success') === 'true') {
+                showToast('Thêm ghi chú thành công!', 'success');
+                sessionStorage.removeItem('note_success');
+            }
+        });
+
         function saveNote() {
             var content = document.getElementById('txtNoteContent').value;
             var customerId = @ViewBag.CustomerID;
 
             if (!content || !content.trim()) {
-                alert('Vui lòng nhập nội dung ghi chú!');
+                showToast('Vui lòng nhập nội dung ghi chú!', 'danger');
                 return;
             }
 
@@ -173,13 +231,13 @@
                 body: JSON.stringify({ CustomerID: customerId, Content: content })
             }).then(function (res) {
                 if (res.ok) {
-                    alert('✅ Thêm ghi chú thành công!');
+                    sessionStorage.setItem('note_success', 'true');
                     location.reload();
                 } else {
-                    alert('❌ Có lỗi xảy ra. Vui lòng thử lại.');
+                    showToast('Có lỗi xảy ra. Vui lòng thử lại.', 'danger');
                 }
             }).catch(function () {
-                alert('❌ Không thể kết nối server.');
+                showToast('Không thể kết nối server.', 'danger');
             });
         }
 
