@@ -107,7 +107,7 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
         public async Task<long> CreateAsync(CreateFeedbackDto dto)
         {
             var status = await _context.SystemTypeValues.FindAsync(dto.StatusID);
-            if (status != null && (status.ValueCode == "NEW" || status.ValueCode == "PROCESSING" || status.ValueCode == "RESOLVED" || status.ValueCode == "CLOSED"))
+            if (status != null && (status.ValueCode == "PROCESSING" || status.ValueCode == "RESOLVED" || status.ValueCode == "CLOSED"))
             {
                 if (dto.AssignedToUserID == null)
                 {
@@ -150,7 +150,7 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
                 throw new Exception($"Không tìm thấy phản hồi ID = {dto.FeedbackID}");
 
             var status = await _context.SystemTypeValues.FindAsync(dto.StatusID);
-            if (status != null && (status.ValueCode == "NEW" || status.ValueCode == "PROCESSING" || status.ValueCode == "RESOLVED" || status.ValueCode == "CLOSED"))
+            if (status != null && (status.ValueCode == "PROCESSING" || status.ValueCode == "RESOLVED" || status.ValueCode == "CLOSED"))
             {
                 if (feedback.AssignedToUserID == null)
                 {
@@ -197,7 +197,7 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
                 throw new Exception($"Không tìm thấy phản hồi ID = {dto.FeedbackID}");
 
             var status = await _context.SystemTypeValues.FindAsync(dto.StatusID);
-            if (status != null && (status.ValueCode == "NEW" || status.ValueCode == "PROCESSING" || status.ValueCode == "RESOLVED" || status.ValueCode == "CLOSED"))
+            if (status != null && (status.ValueCode == "PROCESSING" || status.ValueCode == "RESOLVED" || status.ValueCode == "CLOSED"))
             {
                 if (feedback.AssignedToUserID == null)
                 {

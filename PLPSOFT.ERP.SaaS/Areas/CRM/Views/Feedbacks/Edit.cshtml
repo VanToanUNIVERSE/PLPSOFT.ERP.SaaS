@@ -128,7 +128,7 @@
                 const selectedStatusOption = $('#StatusID option:selected');
                 const statusCode = selectedStatusOption.data('code');
 
-                if ((statusCode === 'NEW' || statusCode === 'PROCESSING' || statusCode === 'RESOLVED' || statusCode === 'CLOSED') && !assignedToUserId) {
+                if ((statusCode === 'PROCESSING' || statusCode === 'RESOLVED' || statusCode === 'CLOSED') && !assignedToUserId) {
                     e.preventDefault();
                     let validationSpan = $('#StatusID').siblings('.text-danger');
                     if (validationSpan.length === 0) {
@@ -151,7 +151,7 @@
                 const selectedStatusOption = $('#StatusID option:selected');
                 const statusCode = selectedStatusOption.data('code');
 
-                if (!((statusCode === 'NEW' || statusCode === 'PROCESSING' || statusCode === 'RESOLVED' || statusCode === 'CLOSED') && !assignedToUserId)) {
+                if (!((statusCode === 'PROCESSING' || statusCode === 'RESOLVED' || statusCode === 'CLOSED') && !assignedToUserId)) {
                     $('#StatusID').removeClass('is-invalid');
                     $('#StatusID').siblings('.field-validation-error').text('');
                 }
