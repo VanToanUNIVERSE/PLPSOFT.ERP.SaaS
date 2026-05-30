@@ -20,3 +20,263 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/* =============================================
+   HỆ THỐNG NHẮC HẸN - REMINDER SYSTEM
+   ============================================= */
+
+/* Nút chuông nhắc hẹn */
+#btnReminderBell {
+  font-size: 1.25rem;
+  border: none;
+  background: transparent;
+  padding: 0.375rem 0.5rem;
+  transition: transform 0.2s ease;
+}
+
+#btnReminderBell:hover {
+  transform: scale(1.15);
+}
+
+/* Animation chuông rung */
+.bell-ringing {
+  animation: bellRing 0.6s ease-in-out;
+}
+
+@keyframes bellRing {
+  0%   { transform: rotate(0deg); }
+  15%  { transform: rotate(15deg); }
+  30%  { transform: rotate(-15deg); }
+  45%  { transform: rotate(10deg); }
+  60%  { transform: rotate(-10deg); }
+  75%  { transform: rotate(5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Badge đếm nhắc hẹn */
+#reminderBadge {
+  font-size: 0.65rem;
+  padding: 0.25em 0.5em;
+  min-width: 18px;
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50%      { transform: translate(-50%, -50%) scale(1.15); }
+}
+
+/* Dropdown danh sách nhắc hẹn */
+.reminder-dropdown {
+  border: none;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.reminder-dropdown .dropdown-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 0.9rem;
+  padding: 0.75rem 1rem;
+}
+
+/* Item nhắc hẹn trong dropdown */
+.reminder-item {
+  padding: 0.65rem 1rem;
+  border-left: 4px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.reminder-item:hover {
+  background-color: #f0f4ff;
+}
+
+.reminder-starting {
+  border-left-color: #198754;
+}
+
+.reminder-ending {
+  border-left-color: #ffc107;
+}
+
+/* Toast nhắc hẹn */
+.toast-reminder {
+  min-width: 320px;
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  animation: toastSlideIn 0.4s ease-out;
+}
+
+@keyframes toastSlideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.toast-reminder .toast-header {
+  border-bottom: none;
+  padding: 0.65rem 1rem;
+}
+
+.toast-reminder .toast-body {
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Trạng thái badge trong bảng danh sách */
+.status-transition {
+  transition: all 0.3s ease;
+}
+
+.status-transition:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* =============================================
+   HỆ THỐNG XÁC THỰC LỖI - VALIDATION STYLING
+   ============================================= */
+
+
+
+/* Validation message display */
+.field-validation-error {
+    display: inline-flex;
+    align-items: center;
+    width: 100%;
+    margin-top: 0.35rem;
+    font-size: 0.85rem;
+    color: #dc3545;
+    font-weight: 500;
+    animation: validationSlideDown 0.25s ease-out forwards;
+}
+
+.field-validation-error::before {
+    content: "\f06a"; /* FontAwesome exclamation-circle */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    margin-right: 0.35rem;
+    font-size: 0.9rem;
+    display: inline-block;
+}
+
+/* Background for soft warning alert card */
+.bg-light-danger {
+    background-color: #fff5f5 !important;
+    border-color: #fecaca !important;
+}
+
+@keyframes validationSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =============================================
+   HỆ THỐNG XÁC NHẬN - CUSTOM CONFIRM MODAL
+   ============================================= */
+
+#modernConfirmModal {
+  backdrop-filter: blur(4px);
+  background-color: rgba(15, 23, 42, 0.3); /* Sleek glassmorphism overlay */
+  transition: all 0.3s ease;
+}
+
+#modernConfirmModal .modal-content {
+  transform: scale(0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#modernConfirmModal.show .modal-content {
+  transform: scale(1);
+}
+
+#modernConfirmModal .modal-body {
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+#modernConfirmModal .btn-light {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+  color: #64748b;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+#modernConfirmModal .btn-light:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #334155;
+  transform: translateY(-1px);
+}
+
+#modernConfirmModal .btn-confirm {
+  font-weight: 600;
+  transition: all 0.2s ease;
+  transform: translateY(0);
+}
+
+#modernConfirmModal .btn-confirm:hover {
+  transform: translateY(-1px);
+}
+
+#modernConfirmModal .btn-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: none;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+#modernConfirmModal .btn-success:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+}
+
+#modernConfirmModal .btn-danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  border: none;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
+#modernConfirmModal .btn-danger:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35);
+}
+
+#modernConfirmModal .btn-warning {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border: none;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+}
+
+#modernConfirmModal .btn-warning:hover {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.35);
+}
+
+#modernConfirmModal .btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border: none;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+#modernConfirmModal .btn-primary:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35);
+}

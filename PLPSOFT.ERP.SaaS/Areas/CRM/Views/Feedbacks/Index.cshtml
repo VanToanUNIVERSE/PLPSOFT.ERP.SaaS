@@ -1,0 +1,161 @@
+@model List<PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Feedback.FeedbackListItemDto>
+
+@{
+    ViewData["Title"] = "Danh sách Phản hồi & Khiếu nại";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Quản lý Phản hồi & Khiếu nại</h1>
+        <a asp-action="Create" class="btn btn-primary shadow-sm">
+            <i class="fas fa-plus fa-sm text-white-50"></i> Tạo phản hồi mới
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form class="row g-3" method="get" asp-action="Index">
+                <div class="col-md-4">
+                    <input type="text" class="form-control" name="keyword" value="@ViewBag.Keyword" placeholder="Tìm theo tiêu đề hoặc tên khách hàng...">
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" name="statusCode">
+                        <option value="">-- Tất cả trạng thái --</option>
+                        <option value="NEW" selected="@(ViewBag.StatusCode == "NEW" ? "selected" : null)">Mới</option>
+                        <option value="PROCESSING" selected="@(ViewBag.StatusCode == "PROCESSING" ? "selected" : null)">Đang xử lý</option>
+                        <option value="RESOLVED" selected="@(ViewBag.StatusCode == "RESOLVED" ? "selected" : null)">Đã giải quyết</option>
+                        <option value="CLOSED" selected="@(ViewBag.StatusCode == "CLOSED" ? "selected" : null)">Đã đóng</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" name="priorityCode">
+                        <option value="">-- Mức độ ưu tiên --</option>
+                        <option value="LOW" selected="@(ViewBag.PriorityCode == "LOW" ? "selected" : null)">Thấp</option>
+                        <option value="MEDIUM" selected="@(ViewBag.PriorityCode == "MEDIUM" ? "selected" : null)">Trung bình</option>
+                        <option value="HIGH" selected="@(ViewBag.PriorityCode == "HIGH" ? "selected" : null)">Cao</option>
+                        <option value="URGENT" selected="@(ViewBag.PriorityCode == "URGENT" ? "selected" : null)">Khẩn cấp</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-secondary flex-grow-1">
+                        <i class="fas fa-filter fa-sm me-1"></i>Lọc dữ liệu
+                    </button>
+                    @if (!string.IsNullOrEmpty(ViewBag.Keyword as string)
+                      || !string.IsNullOrEmpty(ViewBag.StatusCode as string)
+                      || !string.IsNullOrEmpty(ViewBag.PriorityCode as string))
+                    {
+                        <a asp-action="Index" class="btn btn-outline-danger" title="Xóa bộ lọc">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    }
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="feedbackTable" width="100%" cellspacing="0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Ngày tạo</th>
+                            <th>Tiêu đề</th>
+                            <th>Khách hàng</th>
+                            <th>Loại</th>
+                            <th>Ưu tiên</th>
+                            <th>Trạng thái</th>
+                            <th>Nhân viên xử lý</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.Title</td>
+                                    <td>@item.CustomerName</td>
+                                    <td>@item.FeedbackTypeName</td>
+                                    <td>
+                                        @{
+                                            var priorityClass = item.PriorityName?.ToLower() switch
+                                            {
+                                                "cao" or "khẩn cấp" => "bg-danger",
+                                                "trung bình" => "bg-warning text-dark",
+                                                _ => "bg-info"
+                                            };
+                                        }
+                                        <span class="badge @priorityClass">@item.PriorityName</span>
+                                    </td>
+                                    <td>
+                                        @{
+                                            var statusClass = item.StatusName?.ToLower() switch
+                                            {
+                                                "mới" => "bg-primary",
+                                                "đang xử lý" => "bg-warning text-dark",
+                                                "đã giải quyết" => "bg-success",
+                                                _ => "bg-secondary"
+                                            };
+                                        }
+                                        <span class="badge @statusClass">@item.StatusName</span>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.AssignedToUserName))
+                                        {
+                                            <span class="text-dark font-weight-bold">@item.AssignedToUserName</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted font-italic">Chưa gán</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="" role="group">
+                                            <a asp-action="Details" asp-route-id="@item.FeedbackID" class="btn btn-sm btn-info text-white me-2" title="Xem chi tiết">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@item.FeedbackID" class="btn btn-sm btn-warning text-white me-2" title="Sửa">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a asp-action="Assign" asp-route-id="@item.FeedbackID" class="btn btn-sm btn-primary text-white me-2" title="Gán">
+                                                <i class="fas fa-user-plus"></i>
+                                            </a>
+                                            <a asp-action="Resolve" asp-route-id="@item.FeedbackID" class="btn btn-sm btn-success text-white me-2" title="Xử lý">
+                                                <i class="fas fa-check"></i>
+                                            </a>
+                                            <form asp-action="Delete" asp-route-id="@item.FeedbackID" method="post" style="display:inline"
+                                                  data-confirm="Xác nhận xóa phản hồi này?">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-danger" title="Xóa">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center">Không có dữ liệu phản hồi nào.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

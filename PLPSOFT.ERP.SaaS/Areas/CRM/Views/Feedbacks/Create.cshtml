@@ -1,0 +1,197 @@
+@model PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Feedback.CreateFeedbackDto
+
+@{
+    ViewData["Title"] = "Tạo Phản hồi mới";
+    var formData = ViewBag.FormData as PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Feedback.FeedbackFormDataDto;
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Tạo Phản hồi / Khiếu nại</h1>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Có lỗi xảy ra:</strong>
+            <ul class="mb-0">
+                @foreach (var state in ViewData.ModelState.Values)
+                {
+                    foreach (var error in state.Errors)
+                    {
+                        <li>@error.ErrorMessage</li>
+                    }
+                }
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Thông tin phản hồi</h6>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="CompanyID" />
+                <input type="hidden" asp-for="BranchID" />
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label asp-for="CustomerID" class="form-label">Khách hàng <span class="text-danger">*</span></label>
+                        <select asp-for="CustomerID" class="form-select" required>
+                            <option value="">-- Chọn khách hàng --</option>
+                            @if (formData?.Customers != null)
+                            {
+                                foreach (var item in formData.Customers)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="CustomerID" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="FeedbackTypeID" class="form-label">Loại phản hồi <span class="text-danger">*</span></label>
+                        <select asp-for="FeedbackTypeID" class="form-select" required>
+                            <option value="">-- Chọn loại --</option>
+                            @if (formData?.FeedbackTypes != null)
+                            {
+                                foreach (var item in formData.FeedbackTypes)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="FeedbackTypeID" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="InvoiceID" class="form-label">Hóa đơn liên quan (Nếu có)</label>
+                        <select asp-for="InvoiceID" class="form-select">
+                            <option value="">-- Chọn hóa đơn --</option>
+                            @if (formData?.Invoices != null)
+                            {
+                                foreach (var item in formData.Invoices)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="InvoiceID" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label asp-for="PriorityID" class="form-label">Mức độ ưu tiên <span class="text-danger">*</span></label>
+                        <select asp-for="PriorityID" class="form-select" required>
+                            <option value="">-- Chọn mức độ --</option>
+                            @if (formData?.Priorities != null)
+                            {
+                                foreach (var item in formData.Priorities)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="PriorityID" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="StatusID" class="form-label">Trạng thái <span class="text-danger">*</span></label>
+                        <select asp-for="StatusID" class="form-select" required>
+                            <option value="">-- Chọn trạng thái --</option>
+                            @if (formData?.Statuses != null)
+                            {
+                                foreach (var item in formData.Statuses)
+                                {
+                                    <option value="@item.Value" data-code="@item.Code">@item.Text</option>
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="StatusID" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Rating" class="form-label">Đánh giá (1-5) <span class="text-danger">*</span></label>
+                        <input asp-for="Rating" type="number" min="1" max="5" class="form-control" required />
+                        <span asp-validation-for="Rating" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label asp-for="AssignedToUserID" class="form-label">Nhân viên xử lý</label>
+                        <select asp-for="AssignedToUserID" class="form-select">
+                            <option value="">-- Chưa gán --</option>
+                            @if (formData?.Users != null)
+                            {
+                                foreach (var item in formData.Users)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label">Tiêu đề <span class="text-danger">*</span></label>
+                    <input asp-for="Title" type="text" class="form-control" placeholder="Nhập tiêu đề phản hồi ngắn gọn..." required>
+                    <span asp-validation-for="Title" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Content" class="form-label">Nội dung chi tiết <span class="text-danger">*</span></label>
+                    <textarea asp-for="Content" class="form-control" rows="5" placeholder="Mô tả chi tiết vấn đề khách hàng gặp phải..." required></textarea>
+                    <span asp-validation-for="Content" class="text-danger small"></span>
+                </div>
+
+                <hr>
+                <div class="d-flex justify-content-end">
+                    <a asp-action="Index" class="btn btn-secondary me-2">Hủy bỏ</a>
+                    <button type="submit" class="btn btn-primary">Lưu phản hồi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            $('form').on('submit', function(e) {
+                const selectedStatusOption = $('#StatusID option:selected');
+                const statusCode = selectedStatusOption.data('code');
+                const assignedUserId = $('#AssignedToUserID').val();
+
+                if ((statusCode === 'PROCESSING' || statusCode === 'RESOLVED' || statusCode === 'CLOSED') && !assignedUserId) {
+                    e.preventDefault();
+                    let validationSpan = $('#StatusID').siblings('.text-danger');
+                    if (validationSpan.length === 0) {
+                        $('#StatusID').after('<span class="text-danger small field-validation-error"></span>');
+                        validationSpan = $('#StatusID').siblings('.text-danger');
+                    }
+                    validationSpan.text('Không thể chuyển trạng thái khi chưa gán nhân viên xử lý. Vui lòng gán nhân viên trước.');
+                    
+                    $('html, body').animate({
+                        scrollTop: $('#StatusID').offset().top - 100
+                    }, 200);
+                    
+                    $('#StatusID').addClass('is-invalid');
+                } else {
+                    $('#StatusID').removeClass('is-invalid');
+                }
+            });
+
+            $('#StatusID, #AssignedToUserID').on('change', function() {
+                const selectedStatusOption = $('#StatusID option:selected');
+                const statusCode = selectedStatusOption.data('code');
+                const assignedUserId = $('#AssignedToUserID').val();
+
+                if (!((statusCode === 'PROCESSING' || statusCode === 'RESOLVED' || statusCode === 'CLOSED') && !assignedUserId)) {
+                    $('#StatusID').removeClass('is-invalid');
+                    $('#StatusID').siblings('.field-validation-error').text('');
+                }
+            });
+        });
+    </script>
+}

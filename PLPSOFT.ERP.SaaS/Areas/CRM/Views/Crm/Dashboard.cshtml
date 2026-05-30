@@ -1,0 +1,148 @@
+@model CrmDashboardDto
+@{
+    ViewData["Title"] = "CRM Dashboard";
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Tổng quan CRM</h1>
+
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Tổng phản hồi mới</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalNewFeedbacks</div>
+                        </div>
+                        <div class="col-auto">
+                            <span class="fs-3">💬</span>
+                        </div>
+                    </div>
+                    <a href="@Url.Action("Index", "Feedbacks")" class="btn btn-sm btn-outline-primary mt-3 w-100">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Lịch hẹn sắp tới</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalUpcomingSchedules</div>
+                        </div>
+                        <div class="col-auto">
+                            <span class="fs-3">📅</span>
+                        </div>
+                    </div>
+                    <a href="@Url.Action("Index", "Schedules")" class="btn btn-sm btn-outline-success mt-3 w-100">Quản lý lịch</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Lịch quá hạn</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalOverdueSchedules</div>
+                        </div>
+                        <div class="col-auto">
+                            <span class="fs-3">⚠️</span>
+                        </div>
+                    </div>
+                    <a href="@Url.Action("Overdue", "Schedules")" class="btn btn-sm btn-outline-danger mt-3 w-100">Xử lý ngay</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center bg-white">
+                    <h6 class="m-0 font-weight-bold text-primary">Phản hồi gần đây</h6>
+                    <a href="@Url.Action("Index", "Feedbacks")" class="btn btn-sm btn-primary">Xem tất cả</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Khách hàng</th>
+                                    <th>Tiêu đề</th>
+                                    <th>Mức độ</th>
+                                    <th>Ngày tạo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.RecentFeedbacks != null && Model.RecentFeedbacks.Any())
+                                {
+                                    foreach (var item in Model.RecentFeedbacks)
+                                    {
+                                        <tr>
+                                            <td>@item.CustomerName</td>
+                                            <td>@item.Title</td>
+                                            <td>
+                                                @{
+                                                    var priorityClass = item.PriorityName switch
+                                                    {
+                                                        "Khẩn cấp" => "bg-danger",
+                                                        "Cao" => "bg-warning text-dark",
+                                                        "Trung bình" => "bg-info",
+                                                        _ => "bg-secondary"
+                                                    };
+                                                }
+                                                <span class="badge @priorityClass">@item.PriorityName</span>
+                                            </td>
+                                            <td>@item.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="4" class="text-center">Chưa có phản hồi nào</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-white">
+                    <h6 class="m-0 font-weight-bold text-success">Lịch hẹn hôm nay</h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        @if (Model.TodaySchedules != null && Model.TodaySchedules.Any())
+                        {
+                            foreach (var item in Model.TodaySchedules)
+                            {
+                                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1 text-dark font-weight-bold">@item.Title</h6>
+                                        <small class="text-muted"><i class="fas fa-clock mr-1"></i> @item.StartTime.ToString("HH:mm") | @item.CustomerName</small>
+                                    </div>
+                                    <span class="badge bg-info text-white">@item.ScheduleTypeName</span>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="text-center py-4 text-muted">
+                                <p class="mb-0">Không có lịch hẹn nào hôm nay.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

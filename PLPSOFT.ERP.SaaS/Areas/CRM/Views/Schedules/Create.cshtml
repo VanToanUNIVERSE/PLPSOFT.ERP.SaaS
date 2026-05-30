@@ -1,0 +1,137 @@
+@model PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.ScheduleFormViewModel
+
+@{
+    ViewData["Title"] = "Tạo Lịch chăm sóc mới";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Tạo Lịch làm việc & Nhắc hẹn</h1>
+        <a href="@Url.Action("Index", "Schedules")" class="btn btn-secondary btn-sm shadow-sm">Quay lại danh sách</a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 bg-white">
+            <h6 class="m-0 font-weight-bold text-success">Thông tin lịch hẹn</h6>
+        </div>
+        <div class="card-body">
+            <form asp-controller="Schedules" asp-action="Create" method="post">
+
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="CreateDto.CustomerID" class="form-label fw-bold">Khách hàng <span class="text-danger">*</span></label>
+                        <select class="form-select" asp-for="CreateDto.CustomerID" asp-items="@(new SelectList(Model?.Customers, "Value", "Text"))">
+                            <option value="">-- Chọn khách hàng --</option>
+                        </select>
+                        <span asp-validation-for="CreateDto.CustomerID" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="CreateDto.ScheduleTypeID" class="form-label fw-bold">Loại lịch <span class="text-danger">*</span></label>
+                        <select class="form-select border-success" asp-for="CreateDto.ScheduleTypeID" asp-items="@(new SelectList(Model?.ScheduleTypes, "Value", "Text"))">
+                            <option value="">-- Chọn loại lịch --</option>
+                        </select>
+                        <span asp-validation-for="CreateDto.ScheduleTypeID" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="CreateDto.Title" class="form-label fw-bold">Tiêu đề công việc <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" asp-for="CreateDto.Title" placeholder="Ví dụ: Gọi điện hỏi thăm sau khi mua hàng...">
+                    <span asp-validation-for="CreateDto.Title" class="text-danger"></span>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label asp-for="CreateDto.StartTime" class="form-label fw-bold">Thời gian bắt đầu <span class="text-danger">*</span></label>
+                        <input type="datetime-local" class="form-control" asp-for="CreateDto.StartTime">
+                        <span asp-validation-for="CreateDto.StartTime" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="CreateDto.EndTime" class="form-label fw-bold">Thời gian kết thúc <span class="text-danger">*</span></label>
+                        <input type="datetime-local" class="form-control" asp-for="CreateDto.EndTime">
+                        <span asp-validation-for="CreateDto.EndTime" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="CreateDto.AssignedToUserID" class="form-label fw-bold">Người phụ trách <span class="text-danger">*</span></label>
+                        <select class="form-select" asp-for="CreateDto.AssignedToUserID" asp-items="@(new SelectList(Model?.Users, "Value", "Text"))">
+                            <option value="">-- Chọn nhân viên --</option>
+                        </select>
+                        <span asp-validation-for="CreateDto.AssignedToUserID" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="CreateDto.Description" class="form-label fw-bold">Mô tả chi tiết</label>
+                    <textarea class="form-control" asp-for="CreateDto.Description" rows="4" placeholder="Nhập nội dung cần chuẩn bị hoặc lưu ý cho lịch hẹn này..."></textarea>
+                    <span asp-validation-for="CreateDto.Description" class="text-danger"></span>
+                </div>
+
+                <hr>
+                <div class="d-flex justify-content-end">
+                    <a href="@Url.Action("Index", "Schedules")" class="btn btn-secondary me-2 px-4">Hủy</a>
+                    <button type="submit" class="btn btn-success px-4">Lưu lịch hẹn</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        $(document).ready(function () {
+            $('form').on('submit', function (e) {
+                var customer = $('#CreateDto_CustomerID').val();
+                var type = $('#CreateDto_ScheduleTypeID').val();
+                var title = $('#CreateDto_Title').val();
+                var startTime = $('#CreateDto_StartTime').val();
+                var endTime = $('#CreateDto_EndTime').val();
+                var assignedTo = $('#CreateDto_AssignedToUserID').val();
+                
+                // Check if ALL fields are empty/unfilled
+                if (!customer && !type && (!title || !title.trim()) && !startTime && !endTime && !assignedTo) {
+                    e.preventDefault();
+                    
+                    // Show a beautiful error toast
+                    showValidationToast("Bạn chưa nhập dữ liệu nào. Vui lòng điền thông tin lịch hẹn trước khi lưu!");
+                    
+                    // Focus on the first field
+                    $('#CreateDto_CustomerID').focus();
+                    return false;
+                }
+            });
+
+            function showValidationToast(message) {
+                var container = $('#toastContainer');
+                if (!container.length) {
+                    $('body').append('<div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100"></div>');
+                    container = $('#toastContainer');
+                }
+
+                var toastId = 'toast_val_' + Date.now();
+                var toastHtml = `
+                    <div id="${toastId}" class="toast align-items-center text-white bg-danger border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+                        <div class="d-flex">
+                            <div class="toast-body d-flex align-items-center">
+                                <i class="fas fa-triangle-exclamation fs-5 me-2"></i>
+                                <div class="fw-bold">${message}</div>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `;
+
+                container.append(toastHtml);
+                var toastEl = document.getElementById(toastId);
+                var toast = new bootstrap.Toast(toastEl);
+                toast.show();
+
+                toastEl.addEventListener('hidden.bs.toast', function () {
+                    toastEl.remove();
+                });
+            }
+        });
+    </script>
+}

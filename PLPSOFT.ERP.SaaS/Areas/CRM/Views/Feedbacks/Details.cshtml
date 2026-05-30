@@ -1,0 +1,155 @@
+@model PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Feedback.FeedbackDetailDto
+
+@{
+    ViewData["Title"] = "Chi tiết Phản hồi #" + Model.FeedbackID;
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Chi tiết Phản hồi / Khiếu nại #@Model.FeedbackID</h1>
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model.FeedbackID" class="btn btn-warning shadow-sm text-white">
+                <i class="fas fa-edit fa-sm"></i> Chỉnh sửa
+            </a>
+            <a asp-action="Index" class="btn btn-secondary shadow-sm"> Quay lại</a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-white">
+                    <h6 class="m-0 font-weight-bold text-primary">Nội dung phản hồi</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <label class="text-muted small text-uppercase">Tiêu đề</label>
+                        <h4 class="font-weight-bold text-dark">@Model.Title</h4>
+                    </div>
+                    <div class="mb-4">
+                        <label class="text-muted small text-uppercase">Nội dung chi tiết</label>
+                        <p class="text-dark">@Model.Content</p>
+                    </div>
+                    <hr />
+                    <div class="mb-0">
+                        <label class="text-muted small text-uppercase">Kết quả giải quyết (Resolution)</label>
+                        @if (!string.IsNullOrEmpty(Model.Resolution))
+                        {
+                            <p class="text-success">@Model.Resolution</p>
+                            <small class="text-muted">Giải quyết vào: @(Model.ResolvedAt?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")</small>
+                        }
+                        else
+                        {
+                            <p class="text-muted font-italic">Chưa có thông tin xử lý.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-white d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Thao tác xử lý</h6>
+                </div>
+                <div class="card-body">
+                    <div class="btn-group" role="group">
+                        <a asp-action="Assign" asp-route-id="@Model.FeedbackID" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i> Gán nhân viên
+                        </a>
+                        <a asp-action="Resolve" asp-route-id="@Model.FeedbackID" class="btn btn-success">
+                            <i class="fas fa-check"></i> Xử lý / Đóng
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-white">
+                    <h6 class="m-0 font-weight-bold text-primary">Thông tin hệ thống</h6>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Trạng thái</span>
+                            @{
+                                var statusClass = Model.StatusName?.ToLower() switch
+                                {
+                                    "mới" => "bg-primary",
+                                    "đang xử lý" => "bg-warning text-dark",
+                                    "đã giải quyết" => "bg-success",
+                                    _ => "bg-secondary"
+                                };
+                            }
+                            <span class="badge @statusClass">@Model.StatusName</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Mức độ ưu tiên</span>
+                            @{
+                                var priorityClass = Model.PriorityName?.ToLower() switch
+                                {
+                                    "cao" or "khẩn cấp" => "bg-danger",
+                                    "trung bình" => "bg-warning text-dark",
+                                    _ => "bg-info"
+                                };
+                            }
+                            <span class="badge @priorityClass">@Model.PriorityName</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Loại phản hồi</span>
+                            <span class="text-dark fw-bold">@Model.FeedbackTypeName</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Đánh giá (Rating)</span>
+                            <span class="text-warning">
+                                @for(int i=0; i<Model.Rating; i++) { <i class="fas fa-star"></i> }
+                                @for(int i=Model.Rating; i<5; i++) { <i class="far fa-star"></i> }
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-white">
+                    <h6 class="m-0 font-weight-bold text-primary">Đối tượng liên quan</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="text-muted small text-uppercase d-block">Khách hàng</label>
+                        <span class="font-weight-bold text-primary">@Model.CustomerName</span>
+                        <div class="small text-muted">
+                            <i class="fas fa-phone fa-xs"></i> @Model.CustomerPhone <br/>
+                            <i class="fas fa-envelope fa-xs"></i> @Model.CustomerEmail
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small text-uppercase d-block">Hóa đơn</label>
+                        <span class="text-dark font-weight-bold">@(Model.InvoiceCode ?? "N/A")</span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small text-uppercase d-block">Người phụ trách</label>
+                        <span class="text-dark">@(Model.AssignedToUserName ?? "Chưa gán")</span>
+                    </div>
+                    <div class="mb-0">
+                        <label class="text-muted small text-uppercase d-block">Ngày tạo</label>
+                        <span class="text-dark">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                    </div>
+                    <hr/>
+                    <div class="small text-muted">
+                        <div><strong>Đơn vị:</strong> @Model.CompanyName</div>
+                        <div><strong>Chi nhánh:</strong> @Model.BranchName</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
