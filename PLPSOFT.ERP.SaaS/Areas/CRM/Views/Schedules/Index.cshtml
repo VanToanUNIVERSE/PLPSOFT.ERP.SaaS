@@ -60,8 +60,22 @@
                         <option value="upcoming_week" selected="@(ViewBag.TimeFilter == "upcoming_week" ? "selected" : null)">Sắp tới (Tuần này)</option>
                     </select>
                 </div>
-                <div class="col-md-2 d-flex align-items-end">
-                    <button type="submit" class="btn btn-secondary w-100">Lọc lịch</button>
+                <div class="col-md-2 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-secondary flex-grow-1">
+                        <i class="fas fa-filter fa-sm me-1"></i>Lọc lịch
+                    </button>
+                    @{
+                        bool hasFilter = ViewBag.StatusID != null && ViewBag.StatusID != 0
+                                      || ViewBag.ScheduleTypeID != null && ViewBag.ScheduleTypeID != 0
+                                      || ViewBag.AssignedToUserID != null && ViewBag.AssignedToUserID != 0
+                                      || !string.IsNullOrEmpty(ViewBag.TimeFilter as string);
+                    }
+                    @if (hasFilter)
+                    {
+                        <a href="@Url.Action("Index", "Schedules")" class="btn btn-outline-danger" title="Xóa bộ lọc">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    }
                 </div>
             </form>
         </div>

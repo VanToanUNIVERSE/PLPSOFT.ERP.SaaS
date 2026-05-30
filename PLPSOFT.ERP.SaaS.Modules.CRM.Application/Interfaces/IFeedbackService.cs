@@ -30,6 +30,15 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Application.Interfaces
 
         /// <summary>Lấy dữ liệu cho Dashboard CRM</summary>
         Task<PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Dashboard.CrmDashboardDto> GetDashboardDataAsync(long companyId, long branchId);
+
+        // =====================================================
+        // THÔNG BÁO KHIẾU NẠI (Bell Notification — IMemoryCache)
+        // =====================================================
+
+        /// <summary>Lấy danh sách thông báo khiếu nại chưa đọc từ bộ nhớ tạm (IMemoryCache)</summary>
+        Task<List<ComplaintAlertDto>> GetComplaintAlertsAsync(long branchId);
+
+        /// <summary>Đánh dấu đã đọc / xóa thông báo khỏi bộ nhớ tạm theo AlertId</summary>
+        Task DismissComplaintAlertAsync(long branchId, string alertId);
     }
 }
-

@@ -44,10 +44,21 @@
                         <option value="URGENT" selected="@(ViewBag.PriorityCode == "URGENT" ? "selected" : null)">Khẩn cấp</option>
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-secondary w-100">Lọc dữ liệu</button>
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-secondary flex-grow-1">
+                        <i class="fas fa-filter fa-sm me-1"></i>Lọc dữ liệu
+                    </button>
+                    @if (!string.IsNullOrEmpty(ViewBag.Keyword as string)
+                      || !string.IsNullOrEmpty(ViewBag.StatusCode as string)
+                      || !string.IsNullOrEmpty(ViewBag.PriorityCode as string))
+                    {
+                        <a asp-action="Index" class="btn btn-outline-danger" title="Xóa bộ lọc">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    }
                 </div>
             </form>
+
         </div>
     </div>
 

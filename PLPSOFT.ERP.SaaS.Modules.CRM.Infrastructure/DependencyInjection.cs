@@ -13,6 +13,9 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure
             this IServiceCollection services,
             IConfiguration configuration)
         {
+            // Đăng ký IMemoryCache — dùng để lưu tạm thông báo khiếu nại (không cần DB)
+            services.AddMemoryCache();
+
             // Đăng ký DbContext
             services.AddDbContext<CrmDbContext>(options =>
                 options.UseSqlServer(

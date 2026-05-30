@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using PLPSOFT.ERP.SaaS.Modules.CRM.Application.DTOs.Feedback;
 using PLPSOFT.ERP.SaaS.Modules.CRM.Application.Interfaces;
 using PLPSOFT.ERP.SaaS.Modules.CRM.Domain.Entities;
@@ -8,11 +9,16 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
 {
     public class FeedbackService : IFeedbackService
     {
-        private readonly CrmDbContext _context;
+        private readonly CrmDbContext  _context;
+        private readonly IMemoryCache  _cache;
 
-        public FeedbackService(CrmDbContext context)
+        // Cache key theo BranchID — mỗi chi nhánh có danh sách cảnh báo riêng
+        private static string ComplaintCacheKey(long branchId) => $"complaint_alerts_branch_{branchId}";
+
+        public FeedbackService(CrmDbContext context, IMemoryCache cache)
         {
             _context = context;
+            _cache   = cache;
         }
 
         // =====================================================
@@ -135,6 +141,41 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
             _context.CustomerFeedbacks.Add(feedback);
             await _context.SaveChangesAsync();
 
+            // =====================================================
+            // TỰ ĐỘNG THÔNG BÁO CHUÔNG KHI LOẠI LÀ KHIẾU NẠI
+            // Kiểm tra FeedbackType sau khi lưu DB thành công
+            // =====================================================
+            var feedbackType = await _context.SystemTypeValues.FindAsync(dto.FeedbackTypeID);
+            if (feedbackType?.ValueCode == "COMPLAINT")
+            {
+                var customer = await _context.Customers.FindAsync(dto.CustomerID);
+                var branch   = await _context.Branches.FindAsync(dto.BranchID);
+
+                var alert = new ComplaintAlertDto
+                {
+                    AlertId      = Guid.NewGuid().ToString("N"),
+                    FeedbackID   = feedback.FeedbackID,
+                    CustomerName = customer?.CustomerName ?? "Khách hàng",
+                    Title        = dto.Title,
+                    BranchName   = branch?.BranchName ?? "",
+                    CreatedAt    = feedback.CreatedAt
+                };
+
+                var cacheKey = ComplaintCacheKey(dto.BranchID);
+                var alerts = _cache.GetOrCreate(cacheKey, entry =>
+                {
+                    entry.SlidingExpiration = TimeSpan.FromHours(8);
+                    return new List<ComplaintAlertDto>();
+                }) ?? new List<ComplaintAlertDto>();
+
+                alerts.Insert(0, alert);
+
+                _cache.Set(cacheKey, alerts, new MemoryCacheEntryOptions
+                {
+                    SlidingExpiration = TimeSpan.FromHours(8)
+                });
+            }
+
             return feedback.FeedbackID;
         }
 
@@ -210,6 +251,16 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
             feedback.ResolvedAt  = DateTime.Now;
 
             await _context.SaveChangesAsync();
+
+            // =====================================================
+            // KHI ĐÃ XỬ LÝ / ĐÓNG → TỰ ĐỘNG TẮT THÔNG BÁO CHUÔNG
+            // Xóa alert khỏi cache theo FeedbackID khi trạng thái
+            // là RESOLVED hoặc CLOSED
+            // =====================================================
+            if (status != null && (status.ValueCode == "RESOLVED" || status.ValueCode == "CLOSED"))
+            {
+                DismissAlertByFeedbackId(feedback.BranchID, feedback.FeedbackID);
+            }
         }
 
         // =====================================================
@@ -227,6 +278,9 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
             feedback.DeletedAt = DateTime.Now;
 
             await _context.SaveChangesAsync();
+
+            // Xóa alert chuông nếu feedback bị xóa
+            DismissAlertByFeedbackId(feedback.BranchID, feedback.FeedbackID);
         }
 
         // =====================================================
@@ -309,6 +363,61 @@ namespace PLPSOFT.ERP.SaaS.Modules.CRM.Infrastructure.Services
                 TotalOverdueSchedules = 0,  // Chờ DB bảng Schedules
                 RecentFeedbacks = recentFeedbacks
             };
+        }
+
+        // =====================================================
+        // THÔNG BÁO KHIẾU NẠI — ĐỌC TỪ CACHE
+        // =====================================================
+        public Task<List<ComplaintAlertDto>> GetComplaintAlertsAsync(long branchId)
+        {
+            var cacheKey = ComplaintCacheKey(branchId);
+            var alerts   = _cache.TryGetValue(cacheKey, out List<ComplaintAlertDto>? cached)
+                           ? cached ?? new List<ComplaintAlertDto>()
+                           : new List<ComplaintAlertDto>();
+
+            // Tính TimeAgo cho mỗi thông báo
+            var now = DateTime.Now;
+            foreach (var a in alerts)
+            {
+                var diff = now - a.CreatedAt;
+                a.TimeAgo = diff.TotalMinutes < 1  ? "vừa xong"
+                          : diff.TotalMinutes < 60 ? $"{(int)diff.TotalMinutes} phút trước"
+                          : diff.TotalHours   < 24 ? $"{(int)diff.TotalHours} giờ trước"
+                                                    : $"{(int)diff.TotalDays} ngày trước";
+            }
+
+            return Task.FromResult(alerts);
+        }
+
+        public Task DismissComplaintAlertAsync(long branchId, string alertId)
+        {
+            var cacheKey = ComplaintCacheKey(branchId);
+            if (_cache.TryGetValue(cacheKey, out List<ComplaintAlertDto>? alerts) && alerts != null)
+            {
+                alerts.RemoveAll(a => a.AlertId == alertId);
+                _cache.Set(cacheKey, alerts, new MemoryCacheEntryOptions
+                {
+                    SlidingExpiration = TimeSpan.FromHours(8)
+                });
+            }
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Xóa alert khỏi cache theo FeedbackID (dùng nội bộ khi Resolve/Delete).
+        /// Khác với DismissComplaintAlertAsync vốn dùng AlertId (GUID).
+        /// </summary>
+        private void DismissAlertByFeedbackId(long branchId, long feedbackId)
+        {
+            var cacheKey = ComplaintCacheKey(branchId);
+            if (_cache.TryGetValue(cacheKey, out List<ComplaintAlertDto>? alerts) && alerts != null)
+            {
+                alerts.RemoveAll(a => a.FeedbackID == feedbackId);
+                _cache.Set(cacheKey, alerts, new MemoryCacheEntryOptions
+                {
+                    SlidingExpiration = TimeSpan.FromHours(8)
+                });
+            }
         }
     }
 }

@@ -9,13 +9,31 @@ namespace PLPSOFT.ERP.SaaS.Areas.CRM.Controllers
     {
         private readonly IFeedbackService _feedbackService;
 
-        // Tạm thời dùng cố định (sau này lấy từ session/user đăng nhập)
-        private const long CurrentCompanyID = 1;
-        private const long CurrentBranchID = 1;
+        // =====================================================================
+        // GIÁ TRỊ TẠM — Chưa có module đăng nhập & phân quyền
+        // TODO: Khi tích hợp Authentication, thay các hằng số này bằng:
+        //   CurrentUserID   → long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier))
+        //   CurrentUserName → User.FindFirstValue(ClaimTypes.Name)
+        //   CurrentCompanyID / CurrentBranchID → lấy từ Claims hoặc session
+        // =====================================================================
+        private const long   CurrentUserID    = 3;      // crm02 — Nhân viên quản lý chi nhánh
+        private const string CurrentUserName  = "Nhân viên quản lý chi nhánh";
+        private const long   CurrentCompanyID = 1;
+        private const long   CurrentBranchID  = 1;
 
         public FeedbacksController(IFeedbackService feedbackService)
         {
             _feedbackService = feedbackService;
+        }
+
+        /// <summary>
+        /// Inject thông tin người dùng vào ViewBag cho mọi action.
+        /// TODO: Khi có auth thật, lấy từ HttpContext.User thay vì hằng số.
+        /// </summary>
+        public override void OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext context)
+        {
+            ViewBag.CurrentUserName = CurrentUserName;
+            base.OnActionExecuting(context);
         }
 
         // =====================================================
@@ -84,7 +102,6 @@ namespace PLPSOFT.ERP.SaaS.Areas.CRM.Controllers
             }
         }
 
-
         // =====================================================
         // CHỈNH SỬA — GET: /CRM/Feedbacks/Edit/5
         // =====================================================
@@ -98,14 +115,14 @@ namespace PLPSOFT.ERP.SaaS.Areas.CRM.Controllers
 
             return View(new UpdateFeedbackDto
             {
-                FeedbackID = detail.FeedbackID,
-                InvoiceID  = detail.InvoiceID,
-                FeedbackTypeID = detail.FeedbackTypeID, // Wait, I need to check if FeedbackDetailDto has IDs
-                PriorityID = detail.PriorityID,
-                StatusID   = detail.StatusID,
-                Rating     = detail.Rating,
-                Title      = detail.Title,
-                Content    = detail.Content
+                FeedbackID     = detail.FeedbackID,
+                InvoiceID      = detail.InvoiceID,
+                FeedbackTypeID = detail.FeedbackTypeID,
+                PriorityID     = detail.PriorityID,
+                StatusID       = detail.StatusID,
+                Rating         = detail.Rating,
+                Title          = detail.Title,
+                Content        = detail.Content
             });
         }
 
@@ -219,5 +236,26 @@ namespace PLPSOFT.ERP.SaaS.Areas.CRM.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // =====================================================
+        // API: THÔNG BÁO KHIẾU NẠI — GET: /CRM/Feedbacks/ComplaintAlerts
+        // Trả về JSON để reminders.js polling và hiển thị lên chuông
+        // =====================================================
+        [HttpGet]
+        public async Task<IActionResult> ComplaintAlerts()
+        {
+            var alerts = await _feedbackService.GetComplaintAlertsAsync(CurrentBranchID);
+            return Json(alerts);
+        }
+
+        // =====================================================
+        // API: DISMISS ALERT — POST: /CRM/Feedbacks/DismissAlert?alertId=xxx
+        // Xóa thông báo khỏi cache sau khi người dùng click vào
+        // =====================================================
+        [HttpPost]
+        public async Task<IActionResult> DismissAlert(string alertId)
+        {
+            await _feedbackService.DismissComplaintAlertAsync(CurrentBranchID, alertId);
+            return Ok();
+        }
     }
 }
